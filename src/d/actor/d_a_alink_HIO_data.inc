@@ -1,3 +1,4 @@
+#include "../../../include/global.h"
 #include "d/actor/d_a_alink.h"
 
 // clang-format off
@@ -1917,21 +1918,21 @@ const daAlinkHIO_bottle_c1 daAlinkHIO_bottle_c0::m = {
 
 /* 8038E9C0-8038EA30 01B020 0070+00 15/16 0/0 0/0 .rodata          m__22daAlinkHIO_hookshot_c0 */
 const daAlinkHIO_hookshot_c1 daAlinkHIO_hookshot_c0::m = {
-	{
+	{ // no clue what this animation is
 		12,
         1.0f,
         0.0f,
         0.0f,
         13.0f,
 	},
-	{
+	{ // animation when links attaches to roof
 		39,
         1.0f,
         0.0f,
         1.0f,
         11.0f,
 	},
-	{
+	{ // animation when links attaches to wall
 		28,
         1.0f,
         0.0f,
@@ -1939,14 +1940,14 @@ const daAlinkHIO_hookshot_c1 daAlinkHIO_hookshot_c0::m = {
         7.0f,
 	},
     0,
-    1.0f,
+    1.0f, //No idea what this does
     3.0f,
     2000.0f,
     100.0f,
     150.0f,
-    60.0f,
-    5.0f,
-    13.0f,
+    60.0f * DELTA_TIME, // pulling link towards target
+    5.0f * DELTA_TIME,
+    13.0f * DELTA_TIME,
     3000.0f,
     150.0f,
     225.0f,
