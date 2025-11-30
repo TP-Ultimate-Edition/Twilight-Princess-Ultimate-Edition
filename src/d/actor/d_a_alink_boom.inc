@@ -50,11 +50,11 @@ f32 daAlink_c::getBoomLockMax() {
 
     if (checkBossBabaRoom()) {
         return 2600.0f;
-    } else if (daAlinkHIO_boom_c0::m.mLockDistMax > fly_max) {
-        return daAlinkHIO_boom_c0::m.mLockDistMax;
-    } else {
-        return fly_max;
     }
+    if (daAlinkHIO_boom_c0::m.mLockDistMax > fly_max) {
+        return daAlinkHIO_boom_c0::m.mLockDistMax;
+    }
+    return fly_max;
 }
 
 /* 800E0190-800E01A0 0DAAD0 0010+00 0/0 0/0 1/1 .text            getBoomBgThroughTime__9daAlink_cCFv

@@ -1631,7 +1631,7 @@ const daAlinkHIO_bow_c1 daAlinkHIO_bow_c0::m = {
     800.0f,
 };
 
-/* 8038E6C8-8038E714 01AD28 004C+00 22/23 0/0 0/0 .rodata          m__18daAlinkHIO_boom_c0 */
+/* 8038E6C8-8038E714 01AD28 0054+00 22/23 0/0 0/0 .rodata          m__18daAlinkHIO_boom_c0 */
 const daAlinkHIO_boom_c1 daAlinkHIO_boom_c0::m = {
 	{
 		21,
@@ -1649,14 +1649,16 @@ const daAlinkHIO_boom_c1 daAlinkHIO_boom_c0::m = {
 	},
     40,
     0,
-    1.0f,
+    1.0f * DELTA_TIME,
     3.0f,
-    60.0f,
-    60.0f,
+    60.0f * DELTA_TIME,
+    60.0f * DELTA_TIME,
     2000.0f,
     3000.0f,
     3000.0f,
-    40.0f,
+    40.0f * DELTA_TIME,
+    1.1f * DELTA_TIME, // Boomerang cursor hover/pulse speed
+    1.1f * DELTA_TIME,  // Boomerang cursor locked-in rotation speed
 };
 
 /* 8038E714-8038E760 01AD74 004C+00 14/14 0/0 0/0 .rodata          m__18daAlinkHIO_bomb_c0 */
