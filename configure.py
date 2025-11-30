@@ -903,7 +903,7 @@ config.libs = [
             Object(MatchingFor(ALL_GCN), "SSystem/SComponent/c_m3d_g_sph.cpp"),
             Object(MatchingFor(ALL_GCN), "SSystem/SComponent/c_m3d_g_tri.cpp"), # debug weak func order
             Object(MatchingFor("ShieldD"), "SSystem/SComponent/c_m3d_g_vtx.cpp"),
-            Object(MatchingFor(ALL_GCN), "SSystem/SComponent/c_lib.cpp"),
+            Object(Modded, "SSystem/SComponent/c_lib.cpp"),
             Object(MatchingFor(ALL_GCN), "SSystem/SComponent/c_angle.cpp"),
             Object(MatchingFor(ALL_GCN), "SSystem/SStandard/s_basic.cpp"),
         ],
@@ -1822,7 +1822,7 @@ config.libs = [
     ActorRel(MatchingFor(ALL_GCN), "d_a_b_gnd"),
     ActorRel(MatchingFor(ALL_GCN), "d_a_b_go"),
     ActorRel(MatchingFor(ALL_GCN), "d_a_b_gos"),
-    ActorRel(MatchingFor(ALL_GCN), "d_a_b_mgn"),
+    ActorRel(Modded, "d_a_b_mgn"),
     ActorRel(MatchingFor(ALL_GCN), "d_a_b_ob"),
     ActorRel(MatchingFor(ALL_GCN), "d_a_b_oh"),
     ActorRel(MatchingFor(ALL_GCN), "d_a_b_oh2"),
