@@ -30,10 +30,6 @@ ctx.*
 objdiff.json
 compile_commands.json
 
-# Miscellaneous
-/*.txt
-*.exe
-
 # MacOS
 .DS_Store
 
