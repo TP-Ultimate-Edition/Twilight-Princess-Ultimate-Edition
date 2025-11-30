@@ -12,8 +12,31 @@ echo.
 set DECOMP_PATH=%~dp0
 REM Remove trailing backslash from DECOMP_PATH
 if "%DECOMP_PATH:~-1%"=="\" set DECOMP_PATH=%DECOMP_PATH:~0,-1%
-set VANILLA_ISO=%DECOMP_PATH%\orig\GZ2E01\baserom.iso
-set OUTPUT_ISO=%~1
+
+REM Load environment variables from .env file if it exists
+if exist "%DECOMP_PATH%\.env" (
+    echo Loading configuration from .env...
+    for /f "usebackq tokens=1,* delims==" %%a in ("%DECOMP_PATH%\.env") do (
+        set line=%%a
+        REM Skip empty lines and comments
+        if not "!line!"=="" (
+            if not "!line:~0,1!"=="#" (
+                set %%a=%%b
+            )
+        )
+    )
+    echo.
+)
+
+REM Set defaults if not provided in .env
+if not defined VANILLA_ISO set VANILLA_ISO=%DECOMP_PATH%\orig\GZ2E01\baserom.iso
+if not defined OUTPUT_ISO set OUTPUT_ISO=
+if not defined DOLPHIN_PATH set DOLPHIN_PATH=C:\Program Files\Dolphin-x64\Dolphin.exe
+if not defined LAUNCH set LAUNCH=true
+if not defined DUAL_BOOT set DUAL_BOOT=false
+
+REM Command line argument overrides .env OUTPUT_ISO
+if not "%~1"=="" set OUTPUT_ISO=%~1
 
 REM Set default output path if not provided
 if "%OUTPUT_ISO%"=="" (
@@ -113,41 +136,44 @@ if errorlevel 1 (
 
 echo.
 echo ========================================
-echo Build completed successfully!
-echo Output ISO: %OUTPUT_ISO%
+echo  Build complete!
+echo  Output: %OUTPUT_ISO%
 echo ========================================
 echo.
 
-REM Check if DOLPHIN_PATH is set and valid
-if defined DOLPHIN_PATH (
-    if exist "%DOLPHIN_PATH%" (
-        echo Launching Dolphin...
-        start "" "%DOLPHIN_PATH%" -e "%OUTPUT_ISO%"
-        goto :eof
+REM Launch Dolphin if LAUNCH is enabled
+if /i "%LAUNCH%"=="true" (
+    REM Step 4: Launch Dolphin with dual boot if enabled
+    if /i "%DUAL_BOOT%"=="true" (
+        echo [4/4] Launching Dolphin in dual boot mode...
+        if exist "%DOLPHIN_PATH%" (
+            if exist "%VANILLA_ISO%" (
+                echo Starting vanilla ISO: %VANILLA_ISO%
+                start "" "%DOLPHIN_PATH%" -e "%VANILLA_ISO%"
+            ) else (
+                echo WARNING: Vanilla ISO not found at %VANILLA_ISO%
+            )
+            echo Starting modified ISO: %OUTPUT_ISO%
+            start "" "%DOLPHIN_PATH%" -e "%OUTPUT_ISO%"
+            echo Dolphin launched in dual boot mode.
+        ) else (
+            echo WARNING: Dolphin not found at %DOLPHIN_PATH%
+            echo Please update DOLPHIN_PATH in .env file.
+            pause
+        )
     ) else (
-        echo Warning: DOLPHIN_PATH is set but file not found.
-        echo Prompting for new Dolphin location...
+        echo [4/4] Launching Dolphin...
+        if exist "%DOLPHIN_PATH%" (
+            start "" "%DOLPHIN_PATH%" -e "%OUTPUT_ISO%"
+            echo Dolphin launched with modified ISO.
+        ) else (
+            echo WARNING: Dolphin not found at %DOLPHIN_PATH%
+            echo Please update DOLPHIN_PATH in .env file.
+            pause
+        )
     )
+) else (
+    echo Skipping Dolphin launch (LAUNCH=false in .env)
 )
-
-REM DOLPHIN_PATH not set or invalid - prompt user to select Dolphin.exe
-echo.
-echo Dolphin path not configured.
-echo Please select your Dolphin.exe file...
-echo.
-
-for /f "delims=" %%I in ('powershell -Command "Add-Type -AssemblyName System.Windows.Forms; $dialog = New-Object System.Windows.Forms.OpenFileDialog; $dialog.Filter = 'Dolphin Executable (Dolphin.exe)|Dolphin.exe|All Files (*.*)|*.*'; $dialog.Title = 'Select Dolphin.exe'; if ($dialog.ShowDialog() -eq 'OK') { $dialog.FileName }"') do set SELECTED_DOLPHIN=%%I
-
-if "!SELECTED_DOLPHIN!"=="" (
-    echo No Dolphin executable selected. Skipping launch.
-    goto :eof
-)
-
-echo Selected: !SELECTED_DOLPHIN!
-echo Saving DOLPHIN_PATH for future builds...
-setx DOLPHIN_PATH "!SELECTED_DOLPHIN!" >NUL 2>&1
-
-echo Launching Dolphin...
-start "" "!SELECTED_DOLPHIN!" -e "%OUTPUT_ISO%"
 
 endlocal

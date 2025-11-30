@@ -2,10 +2,17 @@ import argparse
 import os
 from pathlib import Path
 
-if os.name == "nt":
-    DEFAULT_DOLPHIN_CONFIG_PATH = Path(os.getenv('APPDATA')) / "Dolphin Emulator"
+# Check for DOLPHIN_MAPS_PATH environment variable first
+DOLPHIN_MAPS_PATH = os.getenv('DOLPHIN_MAPS_PATH')
+if DOLPHIN_MAPS_PATH:
+    DEFAULT_DOLPHIN_MAPS_PATH = Path(DOLPHIN_MAPS_PATH).expanduser()
 else:
-    DEFAULT_DOLPHIN_CONFIG_PATH = Path("~/.var/app/org.DolphinEmu.dolphin-emu/data/dolphin-emu").expanduser()
+    # Fall back to default Dolphin config path
+    if os.name == "nt":
+        DEFAULT_DOLPHIN_CONFIG_PATH = Path(os.getenv('APPDATA')) / "Dolphin Emulator"
+    else:
+        DEFAULT_DOLPHIN_CONFIG_PATH = Path("~/.var/app/org.DolphinEmu.dolphin-emu/data/dolphin-emu").expanduser()
+    DEFAULT_DOLPHIN_MAPS_PATH = DEFAULT_DOLPHIN_CONFIG_PATH / "Maps"
 
 def expanded_path(path_str: str):
     path = Path(path_str)
@@ -31,7 +38,7 @@ parser.add_argument(
 parser.add_argument(
     "--map",
     type=expanded_path,
-    default=DEFAULT_DOLPHIN_CONFIG_PATH / "Maps",
+    default=DEFAULT_DOLPHIN_MAPS_PATH,
     help="Folder to place the symbol map for the modified ISO.",
 )
 

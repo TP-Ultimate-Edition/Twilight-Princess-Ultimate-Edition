@@ -3,11 +3,12 @@
  * Player Clawshot action handling
  */
 
+#include "../../../include/dolphin/os.h"
+#include "JSystem/J3DGraphBase/J3DMaterial.h"
 #include "d/actor/d_a_alink.h"
 #include "d/actor/d_a_b_dr.h"
-#include "d/actor/d_a_obj_swhang.h"
 #include "d/actor/d_a_obj_chandelier.h"
-#include "JSystem/J3DGraphBase/J3DMaterial.h"
+#include "d/actor/d_a_obj_swhang.h"
 
 enum {
     HS_MODE_NONE_e,
@@ -144,7 +145,7 @@ void daAlink_c::hsChainShape_c::draw() {
             csXyz sp64(sp6C);
 
             f32 sp34 = M_PI / temp_f31;
-            
+
             f32 temp_f27;
             f32 var_f26 = 0.0f;
             f32 var_f28;
@@ -187,7 +188,7 @@ void daAlink_c::hsChainShape_c::draw() {
         if (temp_f1 > 1.0f) {
             spA4 *= (1.0f / temp_f1);
             var_f30 = 0.0f;
-            
+
             sp98 = sp2C;
             sp6C.set(spA4.atan2sY_XZ(), spA4.atan2sX_Z(), 0);
 
@@ -376,7 +377,6 @@ void daAlink_c::setHookshotCatchNow() {
     dComIfGp_getVibration().StartShock(4, 1, cXyz(0.0f, 1.0f, 0.0f));
 }
 
-
 /* 80108A90-80108B34 1033D0 00A4+00 1/0 0/0 0/0 .text setHookshotCarryOffset__9daAlink_cFUiPC4cXyz
  */
 bool daAlink_c::setHookshotCarryOffset(fpc_ProcID i_carryActorID, cXyz const* i_posOffset) {
@@ -495,7 +495,6 @@ void daAlink_c::setHookshotSight() {
     field_0x3494 = -1.0f;
 }
 
-
 /* 80108EEC-80108F64 10382C 0078+00 1/1 0/0 0/0 .text            cancelHookshotShot__9daAlink_cFv */
 void daAlink_c::cancelHookshotShot() {
     if (checkHookshotItem(mEquipItem) &&
@@ -522,7 +521,6 @@ bool daAlink_c::cancelHookshotMove() {
 
     return 0;
 }
-
 
 /* 8010903C-80109070 10397C 0034+00 2/2 0/0 0/0 .text
  * checkHookshotReadyMaterialOffMode__9daAlink_cCFv             */
@@ -746,7 +744,8 @@ void daAlink_c::setHookshotReturnEnd() {
         field_0x2060->initOldFrameMorf(3.0f, field_0x30a8, field_0x30aa);
     } else if (checkHookshotShootAnime()) {
         setUpperAnimeBaseSpeed(
-            0x18D, checkAttentionLock() ? daAlinkHIO_hookshot_c0::m.mWaitAnmSpeed : 0.0f, 3.0f);
+            0x18D, checkAttentionLock() ? daAlinkHIO_hookshot_c0::m.mWaitAnmSpeed : 0.0f,
+            (3.0f * DELTA_TIME ));
     }
 
     mFastShotTime = 0;
@@ -781,7 +780,7 @@ int daAlink_c::setHookshotHangMoveBGCollect() {
 
         if (dComIfG_Bgsp().ChkMoveBG(*poly)) {
             dComIfG_Bgsp().MoveBgTransPos(*poly, 1, &current.pos, &current.angle, &shape_angle);
-            
+
             csXyz sp8(0, field_0x3022, 0);
             dComIfG_Bgsp().MoveBgTransPos(*poly, 1, &mIronBallBgChkPos, NULL, &sp8);
             field_0x3022 = sp8.y;
@@ -835,6 +834,7 @@ static cXyz l_hookSnowSandHitScale(0.5f, 0.5f, 0.5f);
 
 /* 80109BDC-8010B2DC 10451C 1700+00 1/1 0/0 0/0 .text            setHookshotPos__9daAlink_cFv */
 void daAlink_c::setHookshotPos() {
+    OSReport("hookshotPos\n");
     mDoMtx_stack_c::copy(mpLinkModel->getAnmMtx(field_0x30c0));
     mDoMtx_stack_c::transM(-2.0f, 1.0f, 1.0f);
     mDoMtx_stack_c::XYZrotM(cM_deg2s(5.7f), cM_deg2s(162.0f), 0);
@@ -914,25 +914,25 @@ void daAlink_c::setHookshotPos() {
     f32 shoot_speed;
     f32 length;
     if (checkLv7BossRoom()) {
-        return_speed = daAlinkHIO_hookshot_c0::m.mBossReturnSpeed;
-        shoot_speed = daAlinkHIO_hookshot_c0::m.mBossShootSpeed;
+        return_speed = daAlinkHIO_hookshot_c0::m.mBossReturnSpeed * DELTA_TIME ;
+        shoot_speed = daAlinkHIO_hookshot_c0::m.mBossShootSpeed * DELTA_TIME ;
         length = daAlinkHIO_hookshot_c0::m.mBossMaxLength;
     } else {
-        return_speed = daAlinkHIO_hookshot_c0::m.mReturnSpeed;
-        shoot_speed = daAlinkHIO_hookshot_c0::m.mShootSpeed;
+        return_speed = daAlinkHIO_hookshot_c0::m.mReturnSpeed * DELTA_TIME ;
+        shoot_speed = daAlinkHIO_hookshot_c0::m.mShootSpeed * DELTA_TIME ;
         length = daAlinkHIO_hookshot_c0::m.mMaxLength;
     }
 
     if (mItemMode == HS_MODE_RETURN_e) {
         if (targetAc_p != NULL) {
             if (checkLv7BossRoom()) {
-                return_speed = daAlinkHIO_hookshot_c0::m.mBossStickReturnSpeed;
+                return_speed = daAlinkHIO_hookshot_c0::m.mBossStickReturnSpeed * DELTA_TIME ;
             } else {
-                return_speed = daAlinkHIO_hookshot_c0::m.mStickReturnSpeed;
+                return_speed = daAlinkHIO_hookshot_c0::m.mStickReturnSpeed * DELTA_TIME ;
             }
         }
 
-        if (checkModeFlg(0x400)) {
+        if (checkModeFlg(MODE_RIDING)) {
             return_speed += current.pos.abs(field_0x3798);
         }
 
@@ -1324,7 +1324,6 @@ void daAlink_c::hookshotRoofTurn() {
     }
 }
 
-
 /* 8010B644-8010B720 105F84 00DC+00 3/3 0/0 0/0 .text
  * initHookshotRoofWaitActor__9daAlink_cFP10fopAc_ac_c          */
 void daAlink_c::initHookshotRoofWaitActor(fopAc_ac_c* i_actor) {
@@ -1450,7 +1449,6 @@ int daAlink_c::procHookshotSubjectInit() {
     return 1;
 }
 
-
 /* 8010BB48-8010BC08 106488 00C0+00 1/0 0/0 0/0 .text            procHookshotSubject__9daAlink_cFv
  */
 int daAlink_c::procHookshotSubject() {
@@ -1569,7 +1567,6 @@ int daAlink_c::procHookshotFlyInit() {
     return 1;
 }
 
-
 /* 8010BEF0-8010C830 106830 0940+00 2/1 0/0 0/0 .text            procHookshotFly__9daAlink_cFv */
 int daAlink_c::procHookshotFly() {
     fopAc_ac_c* targetAc_p = mHookTargetAcKeep.getActor();
@@ -1594,7 +1591,9 @@ int daAlink_c::procHookshotFly() {
     setHookshotTopPosFly();
 
     field_0x37d4 = mHookshotTopPos - mHeldItemRootPos;
-    if (mProcVar0.field_0x3008 != 0 && cLib_distanceAngleS(field_0x37d4.atan2sX_Z(), temp_r24) > 0x4000) {
+    if (mProcVar0.field_0x3008 != 0 &&
+        cLib_distanceAngleS(field_0x37d4.atan2sX_Z(), temp_r24) > 0x4000)
+    {
         setHookshotReturnEnd();
     } else {
         mProcVar0.field_0x3008 = 0;
@@ -1711,7 +1710,6 @@ int daAlink_c::procHookshotFly() {
     return 1;
 }
 
-
 /* 8010C830-8010C9F4 107170 01C4+00 4/4 0/0 0/0 .text
  * procHookshotRoofWaitInit__9daAlink_cFiP10fopAc_ac_ci         */
 int daAlink_c::procHookshotRoofWaitInit(int param_0, fopAc_ac_c* param_1, int param_2) {
@@ -1762,7 +1760,6 @@ int daAlink_c::procHookshotRoofWaitInit(int param_0, fopAc_ac_c* param_1, int pa
     field_0x814.SetWeight(255);
     return 1;
 }
-
 
 /* 8010C9F4-8010CC80 107334 028C+00 1/0 0/0 0/0 .text            procHookshotRoofWait__9daAlink_cFv
  */
@@ -1826,7 +1823,6 @@ int daAlink_c::procHookshotRoofWait() {
     return 1;
 }
 
-
 /* 8010CC80-8010CD60 1075C0 00E0+00 1/1 0/0 0/0 .text
  * procHookshotRoofShootInit__9daAlink_cFP10fopAc_ac_c          */
 int daAlink_c::procHookshotRoofShootInit(fopAc_ac_c* param_0) {
@@ -1857,7 +1853,6 @@ int daAlink_c::procHookshotRoofShootInit(fopAc_ac_c* param_0) {
     mProcVar3.field_0x300e = mBodyAngle.x;
     return 1;
 }
-
 
 /* 8010CD60-8010CF6C 1076A0 020C+00 1/0 0/0 0/0 .text            procHookshotRoofShoot__9daAlink_cFv
  */
@@ -1924,7 +1919,6 @@ int daAlink_c::procHookshotRoofShoot() {
     return 1;
 }
 
-
 /* 8010CF6C-8010D034 1078AC 00C8+00 1/1 0/0 0/0 .text
  * procHookshotRoofBootsInit__9daAlink_cFP10fopAc_ac_c          */
 int daAlink_c::procHookshotRoofBootsInit(fopAc_ac_c* param_0) {
@@ -1952,7 +1946,6 @@ int daAlink_c::procHookshotRoofBootsInit(fopAc_ac_c* param_0) {
     field_0x814.SetWeight(255);
     return 1;
 }
-
 
 /* 8010D034-8010D174 107974 0140+00 1/0 0/0 0/0 .text            procHookshotRoofBoots__9daAlink_cFv
  */
@@ -1982,7 +1975,6 @@ int daAlink_c::procHookshotRoofBoots() {
 
     return 1;
 }
-
 
 /* 8010D174-8010D38C 107AB4 0218+00 3/3 0/0 0/0 .text procHookshotWallWaitInit__9daAlink_cFisi */
 int daAlink_c::procHookshotWallWaitInit(int param_0, s16 param_1, int param_2) {
@@ -2034,7 +2026,6 @@ int daAlink_c::procHookshotWallWaitInit(int param_0, s16 param_1, int param_2) {
     mProcVar5.field_0x3012 = param_2;
     return 1;
 }
-
 
 /* 8010D38C-8010D5F4 107CCC 0268+00 1/0 0/0 0/0 .text            procHookshotWallWait__9daAlink_cFv
  */
@@ -2100,7 +2091,6 @@ int daAlink_c::procHookshotWallWait() {
     return 1;
 }
 
-
 /* 8010D5F4-8010D6CC 107F34 00D8+00 1/1 0/0 0/0 .text procHookshotWallShootInit__9daAlink_cFv */
 int daAlink_c::procHookshotWallShootInit() {
     commonProcInit(PROC_HOOKSHOT_WALL_SHOOT);
@@ -2129,7 +2119,6 @@ int daAlink_c::procHookshotWallShootInit() {
     setHookshotReadyMaterial();
     return 1;
 }
-
 
 /* 8010D6CC-8010D93C 10800C 0270+00 1/0 0/0 0/0 .text            procHookshotWallShoot__9daAlink_cFv
  */
