@@ -1,3 +1,4 @@
+#include "../../../include/global.h"
 #include "d/actor/d_a_alink.h"
 
 // clang-format off
@@ -1849,21 +1850,21 @@ const daAlinkHIO_bottle_c1 daAlinkHIO_bottle_c0::m = {
 };
 
 const daAlinkHIO_hookshot_c1 daAlinkHIO_hookshot_c0::m = {
-	{
+	{ // no clue what this animation is
 		12,
         1.0f,
         0.0f,
         0.0f,
         13.0f,
 	},
-	{
+	{ // animation when links attaches to roof
 		39,
         1.0f,
         0.0f,
         1.0f,
         11.0f,
 	},
-	{
+	{ // animation when links attaches to wall
 		28,
         1.0f,
         0.0f,
@@ -1871,18 +1872,20 @@ const daAlinkHIO_hookshot_c1 daAlinkHIO_hookshot_c0::m = {
         7.0f,
 	},
     0,
-    1.0f,
-    3.0f,
+    1.0f * DELTA_TIME, //Speed link moves when lock on and hold hook
+    3.0f, //No idea what this does
     2000.0f,
-    100.0f,
-    150.0f,
-    60.0f,
-    5.0f,
-    13.0f,
+    100.0f * DELTA_TIME,
+    150.0f * DELTA_TIME,
+    60.0f * DELTA_TIME, // pulling link towards target
+    5.0f * DELTA_TIME,
+    13.0f * DELTA_TIME,
     3000.0f,
-    150.0f,
-    225.0f,
-    90.0f,
+    150.0f * DELTA_TIME,
+    225.0f * DELTA_TIME,
+    90.0f * DELTA_TIME,
+    1.0f * DELTA_TIME, // Hook tip animation speed
+    0.9f * DELTA_TIME, // Lock cursor spinner speed
 };
 
 const daAlinkHIO_spinner_c1 daAlinkHIO_spinner_c0::m = {

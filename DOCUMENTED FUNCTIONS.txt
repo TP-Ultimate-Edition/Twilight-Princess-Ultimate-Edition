@@ -1,0 +1,17 @@
+Contains Documentation of all functions
+
+d_a_alink {
+    field_0x2fa7	=	eyeBlinkTimer
+    field_0x3418	=	eyeOffsetX
+    field_0x33F0	=	cachedEyeOffsetX
+    field_0x33F4	=	cachedEyeOffsetY
+    field_0x33F8    	=   	tempEyeOffset
+    field_0x2fee    	=   	headTiltAngle
+    field_0x3124    	=   	swimNeckDir
+    field_0x2180[0] 	=   	leftEyeBone
+    field_0x2180[1] 	=   	rightEyeBone
+    field_0x2180[2] 	=   	eyeMatController[2]
+    field_0x30d2        =       mWolfDashTimer
+    field_0x30d0        =       mWolfDashDistTimer
+}
+    

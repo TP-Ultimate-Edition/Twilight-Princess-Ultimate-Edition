@@ -17,7 +17,7 @@ void JFWDisplay::ctor_subroutine(bool enableAlpha) {
     mZClear = 0xFFFFFF;
     mGamma = 0;
     mFader = NULL;
-    mFrameRate = 1;
+    mFrameRate = 1; 
     mTickRate = 0;
     mCombinationRatio = 0.0f;
     field_0x30 = 0;
@@ -237,7 +237,7 @@ void JFWDisplay::beginRender() {
     }
 
     waitForTick(mTickRate, mFrameRate);
-    JUTVideo::getManager()->waitRetraceIfNeed();
+    // JUTVideo::getManager()->waitRetraceIfNeed();  // Boofener: Disabled VSync to unlock framerate
 
     OSTick tick = OSGetTick();
     field_0x30 = tick - field_0x2c;
@@ -345,7 +345,7 @@ void JFWDisplay::waitBlanking(int param_0) {
 }
 
 static void waitForTick(u32 p1, u16 p2) {
-    if (p1 != 0) {
+    if (false) { // Boofener: Changed p1 != 0 to False (unlock fps)
         static OSTime nextTick = OSGetTime();
         OSTime time = OSGetTime();
         while (time < nextTick) {
@@ -355,15 +355,31 @@ static void waitForTick(u32 p1, u16 p2) {
         nextTick = time + p1;
     }
     else {
-        static u32 nextCount = VIGetRetraceCount();
-        u32 uVar1 = (p2 == 0) ? 1 : p2;
-        OSMessage msg;
-        do {
-            if (!OSReceiveMessage(JUTVideo::getManager()->getMessageQueue(), &msg, OS_MESSAGE_BLOCK)) {
-                msg = 0;
+        static OSTime lastFrameTime = 0;
+
+        float targetFPS = getTargetFramerate();
+        OSTime currentTime = OSGetTime();
+
+        // Boofener: Use time-based frame limiting for all framerates
+        // This works regardless of VBI/vsync settings
+        if (targetFPS > 0.0f) {
+            float targetFrameTimeMS = 1000.0f / targetFPS;  // ms per frame
+
+            if (lastFrameTime != 0) {
+                // Calculate how long this frame took
+                OSTime deltaTicks = currentTime - lastFrameTime;
+                float deltaMS = (float)OSTicksToMilliseconds(deltaTicks);
+
+                // Spin-wait until we hit target frametime (more accurate than sleep)
+                while (deltaMS < targetFrameTimeMS) {
+                    currentTime = OSGetTime();
+                    deltaTicks = currentTime - lastFrameTime;
+                    deltaMS = (float)OSTicksToMilliseconds(deltaTicks);
+                }
             }
-        } while (((int)msg - (int)nextCount) < 0);
-        nextCount = (int)msg + uVar1;
+
+            lastFrameTime = currentTime;
+        }
     }
 }
 

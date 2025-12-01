@@ -2064,13 +2064,13 @@ void daAlink_lockCursor_c::update() {
         field_0x2c = 21.0f;
     }
 
-    field_0x2c += 0.9f;
+    field_0x2c += daAlinkHIO_hookshot_c0::m.mLockCursorSpinnerSpeed;
 
     if (field_0x2c >= 50.0f) {
         field_0x2c += -29.0f;
     }
 
-    field_0x30 += 0.9f;
+    field_0x30 += 0.9f; //what it do
 
     if (field_0x30 >= field_0x1c->getFrameMax()) {
         field_0x30 -= field_0x1c->getFrameMax();

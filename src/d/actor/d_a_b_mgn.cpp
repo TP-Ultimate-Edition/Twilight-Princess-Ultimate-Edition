@@ -742,9 +742,9 @@ void daB_MGN_c::setBloodEffect() {
         }
 
         if (cM_rnd() < 0.3f) {
-            mBloodEffTimer = (int)(var_f31 * (cM_rndF(3.0f) + 3.0f));
+            mBloodEffTimer = (int)(var_f31 * (cM_rndF(3.0f) + 3.0f)) * DELTA_TIME;
         } else {
-            mBloodEffTimer = (int)(var_f31 * (cM_rndFX(10.0f) + 15.0f));
+            mBloodEffTimer = (int)(var_f31 * (cM_rndFX(10.0f) + 15.0f)) * DELTA_TIME;
         }
     }
 }
@@ -850,7 +850,7 @@ void daB_MGN_c::checkDownBeforeBG() {
 
 void daB_MGN_c::setBck(int i_anm, u8 i_mode, f32 i_morf, f32 i_speed) {
     mpMgnModelMorf->setAnm((J3DAnmTransform*)dComIfG_getObjectRes("B_mgn", i_anm), i_mode, i_morf,
-                           i_speed, 0.0f, -1.0f);
+                           i_speed * DELTA_TIME, 0.0f, -1.0f);
 }
 
 bool daB_MGN_c::checkBck(int i_anm) {
@@ -1054,13 +1054,13 @@ void daB_MGN_c::damage_check() {
 
         if (mAtInfo.mpCollider != NULL) {
             if (mAtInfo.mpCollider->ChkAtType(0xD8000000)) {
-                mDamageInvulnerabilityTimer = 20;
+                mDamageInvulnerabilityTimer = 20 * DELTA_TIME;
             } else {
-                mDamageInvulnerabilityTimer = 10;
+                mDamageInvulnerabilityTimer = 10 * DELTA_TIME;
             }
 
             if (mAtInfo.mAttackPower <= 1) {
-                mDamageInvulnerabilityTimer = (u8)(KREG_S(8) + 10);
+                mDamageInvulnerabilityTimer = (u8)(KREG_S(8) + 10) * DELTA_TIME;
             }
 
             s16 prev_hp = health;
@@ -1068,7 +1068,7 @@ void daB_MGN_c::damage_check() {
 
             if (field_0xafd == 0) {
                 mSound.startCreatureVoice(Z2SE_EN_MGN_V_KOROBU, -1);
-                mHeadHitEffTimer = 100;
+                mHeadHitEffTimer = 100 * DELTA_TIME;
 
                 JPABaseEmitter* emitter = dComIfGp_particle_getEmitter(mHeadLightEmitterID);
                 if (emitter != NULL) {
@@ -1202,7 +1202,7 @@ void daB_MGN_c::executeCircle() {
 
         field_0xa90 += field_0xa92;
         mMoveMode += (u8)2;
-        field_0xa9c = cM_rndFX(50.0f) + 200.0f;
+        mTimer = cM_rndFX(50.0f) + 200.0f;
 
         mAtSph.OnAtSetBit();
         mAtSph.SetAtAtp(2);
@@ -1236,7 +1236,7 @@ void daB_MGN_c::executeCircle() {
         calcJointAngle(var_r28);
 
         if (mMoveMode == 2) {
-            if (field_0xa9c == 0 && current.pos.abs(player_pos) > 2000.0f) {
+            if (mTimer == 0 && current.pos.abs(player_pos) > 2000.0f) {
                 mMoveMode = 5;
                 mAtSph.OffAtSetBit();
 
@@ -1289,7 +1289,7 @@ void daB_MGN_c::executeCircle() {
         cLib_chaseF(&speedF, 0.0f, 1.5f);
         if (!speedF) {
             setBck(BCK_MGN_WAIT, J3DFrameCtrl::EMode_LOOP, 30.0f, 1.0f);
-            field_0xa9c = 30;
+            mTimer = 30;
             mMoveMode = 6;
         }
         break;
@@ -1301,7 +1301,7 @@ void daB_MGN_c::executeCircle() {
         cLib_addCalcAngleS2(&shape_angle.y, var_r28, 8, 0x800);
         calcJointAngle(var_r28);
 
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             field_0xafd = 0;
             setActionMode(ACTION_DASH_e, 0);
         }
@@ -1343,7 +1343,7 @@ void daB_MGN_c::executeDash() {
             field_0xafd = 0;
             attention_info.flags = 0;
             mMoveMode = 12;
-            field_0xa9c = 20;
+            mTimer = 20;
             setBck(BCK_MGN_WAIT, J3DFrameCtrl::EMode_LOOP, 3.0f, 1.0f);
         } else {
             speedF = 0.0f;
@@ -1354,7 +1354,7 @@ void daB_MGN_c::executeDash() {
                 field_0xafd = 0;
                 attention_info.flags = 0;
                 mMoveMode = 12;
-                field_0xa9c = 60;
+                mTimer = 60;
                 setBck(BCK_MGN_WAIT, J3DFrameCtrl::EMode_LOOP, 3.0f, 1.0f);
 
                 shape_angle.y = fopAcM_searchPlayerAngleY(this);
@@ -1362,7 +1362,7 @@ void daB_MGN_c::executeDash() {
             } else {
                 mGdgateNum++;
                 mGdgateStatusIdx = setHideSmokeEffect(&mNextGdgatePos, 0);
-                field_0xa9c = cM_rndF(15.0f) + 30.0f;
+                mTimer = cM_rndF(15.0f) + 30.0f;
                 mMoveMode = 20;
             }
         }
@@ -1370,11 +1370,11 @@ void daB_MGN_c::executeDash() {
     }
 
     case 12:
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             if (field_0xaff >= 5) {
-                field_0xa9c = 15;
+                mTimer = 15;
             } else {
-                field_0xa9c = 30;
+                mTimer = 30;
             }
 
             if (mGdgateStatusIdx != -1) {
@@ -1386,7 +1386,7 @@ void daB_MGN_c::executeDash() {
         break;
 
     case 13:
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             onBodyCo();
 
             mMoveMode = 2;
@@ -1396,7 +1396,7 @@ void daB_MGN_c::executeDash() {
 
             mAcch.ClrWallHit();
             field_0xaac = 20;
-            field_0xa9c = 21;
+            mTimer = 21;
             mJewelColorMode = 1;
             speedF = speed.y = gravity = 0.0f;
 
@@ -1418,7 +1418,7 @@ void daB_MGN_c::executeDash() {
             current.angle.y = shape_angle.y = mGdgateAngle[mGdgateStatusIdx];
         }
 
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             if (mGdgateStatusIdx != -1) {
                 mGdgateStatus[mGdgateStatusIdx] = 3;
             }
@@ -1440,14 +1440,14 @@ void daB_MGN_c::executeDash() {
 
         if (mpMgnModelMorf->isStop()) {
             mMoveMode = 2;
-            field_0xa9c = 0;
+            mTimer = 0;
             field_0xaac = 0;
         }
         break;
 
     case 2:
         if (field_0xaac == 0) {
-            gravity = -5.0f;
+            gravity = -5.0f * DELTA_TIME;
         }
 
         if (checkBck(BCK_MGN_APPROACH)) {
@@ -1467,7 +1467,7 @@ void daB_MGN_c::executeDash() {
             field_0xb03 = 1;
         }
 
-        speedF = l_HIO.dash_speed;
+        speedF = l_HIO.dash_speed * DELTA_TIME;
         fopAcM_OnCarryType(this, fopAcM_CARRY_LIGHT);
 
         if (field_0xb0b >= 2) {
@@ -1515,7 +1515,7 @@ void daB_MGN_c::executeDash() {
             return;
         }
 
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             fopAc_ac_c* var_r27;
             if (field_0xaff >= 5) {
                 cXyz sp3C(cM_ssin(shape_angle.y) * 1600.0f, 300.0f, cM_scos(shape_angle.y) * 1600.0f);
@@ -1600,7 +1600,7 @@ void daB_MGN_c::executeDash() {
         mAtSph.OnAtSetBit();
         mAtSph.SetAtAtp(2);
         current.angle.y = shape_angle.y;
-        speedF = l_HIO.dash_speed;
+        speedF = l_HIO.dash_speed * DELTA_TIME;
         // fallthrough
     case 6: {
         if (mpMgnBtk->isStop()) {
@@ -1681,7 +1681,7 @@ void daB_MGN_c::executeThrown() {
         if (mpMgnModelMorf->isStop()) {
             setBck(BCK_MGN_MDCATCHED, J3DFrameCtrl::EMode_LOOP, 3.0f, 1.0f);
             mMoveMode = 3;
-            field_0xa9c = 30;
+            mTimer = 30;
         }
         break;
 
@@ -1693,7 +1693,7 @@ void daB_MGN_c::executeThrown() {
         cLib_chasePos(&current.pos, target, 100.0f);
         shape_angle.y = fopAcM_searchPlayerAngleY(this);
 
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             dComIfGp_getVibration().StopQuake(0x1F);
         }
 
@@ -2241,10 +2241,10 @@ void daB_MGN_c::executeWarp() {
                 field_0xafe = 0;
             }
 
-            field_0xa9c = 90;
+            mTimer = 90;
         } else {
             field_0xafe = 1;
-            field_0xa9c = nREG_S(7);
+            mTimer = nREG_S(7);
         }
 
         attention_info.flags = 0;
@@ -2252,7 +2252,7 @@ void daB_MGN_c::executeWarp() {
         offBodyCo();
         // fallthrough
     case 2:
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             if (field_0xafe == 0) {
                 mGdgateNum = 0;
                 setActionMode(ACTION_DASH_e, 10);
@@ -2274,7 +2274,7 @@ void daB_MGN_c::executeFall() {
     switch (mMoveMode) {
     case 0: {
         onBodyCo();
-        f32 var_f31 = player->speedF * 60.0f;
+        f32 var_f31 = (player->speedF * 60.0f) * DELTA_TIME;
         s16 sp8 = player->current.angle.y;
         cXyz eff_pos(player_pos.x + var_f31 * cM_ssin(sp8), 1500.0f, (player_pos.z + var_f31 * cM_scos(sp8)));
 
@@ -2303,7 +2303,7 @@ void daB_MGN_c::executeFall() {
         field_0xb16 = field_0xb14 = shape_angle.y;
 
         mMoveMode = 1;
-        field_0xa9c = 60;
+        mTimer = 60;
 
         setBck(BCK_MGN_DROP_POSE, J3DFrameCtrl::EMode_LOOP, 3.0f, 1.0f);
 
@@ -2315,11 +2315,11 @@ void daB_MGN_c::executeFall() {
     case 1:
         cLib_chaseF(&field_0xae8, 1.0f, 0.02f);
 
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             mpMgnBtk->setPlaySpeed(0.7f);
             attention_info.flags = 0;
             field_0xafd = 0;
-            gravity = -3.0f;
+            gravity = -3.0f * DELTA_TIME;
             mMoveMode = 4;
 
             onBodyFallAt();
@@ -2329,7 +2329,7 @@ void daB_MGN_c::executeFall() {
             if (mGdgateStatusIdx != -1) {
                 mGdgateStatus[mGdgateStatusIdx] = 7;
             }
-        } else if (field_0xa9c == 30 && mGdgateStatusIdx != -1) {
+        } else if (mTimer == 30 && mGdgateStatusIdx != -1) {
             mGdgateStatus[mGdgateStatusIdx] = 5;
         }
         break;
@@ -2358,13 +2358,13 @@ void daB_MGN_c::executeFall() {
                 mMoveMode = 7;
             }
 
-            field_0xa9c = 5;
+            mTimer = 5;
             setFallAttackEffect();
         }
         break;
 
     case 6:
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             offBodyFallAt();
         }
 
@@ -2379,7 +2379,7 @@ void daB_MGN_c::executeFall() {
         break;
 
     case 7:
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             offBodyFallAt();
         }
 
@@ -2422,9 +2422,9 @@ void daB_MGN_c::executeFall() {
         cLib_addCalcAngleS(&shape_angle.y, fopAcM_searchPlayerAngleY(this), 0x10, 0x400, 0x80);
 
         if (mpMgnModelMorf->checkFrame(19.0f)) {
-            gravity = -5.0f;
-            speed.y = 35.0f;
-            speedF = 70.0f;
+            gravity = -5.0f * DELTA_TIME;
+            speed.y = 35.0f * DELTA_TIME;
+            speedF = 70.0f * DELTA_TIME;
             current.angle.y = shape_angle.y + 0x8000;
             mMoveMode = 11;
         }
@@ -2451,7 +2451,7 @@ void daB_MGN_c::executeFall() {
 
         if (mpMgnModelMorf->isStop()) {
             setBck(BCK_MGN_WAIT, J3DFrameCtrl::EMode_LOOP, 3.0f, 1.0f);
-            field_0xa9c = 30;
+            mTimer = 30;
             mMoveMode = 13;
             mJewelColorMode = 2;
         }
@@ -2467,7 +2467,7 @@ void daB_MGN_c::executeFall() {
         cLib_addCalcAngleS(&shape_angle.y, fopAcM_searchPlayerAngleY(this), 0x10, 0x400, 0x80);
         current.angle.y = shape_angle.y;
 
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             field_0xafd = 0;
             setActionMode(ACTION_DASH_e, 2);
             mJewelColorMode = 2;
@@ -2475,7 +2475,7 @@ void daB_MGN_c::executeFall() {
         break;
 
     case 15:
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             offBodyFallAt();
         }
 
@@ -2715,9 +2715,9 @@ void daB_MGN_c::executeOpening() {
         cLib_addCalcPos2(&mDemoCamCenter, work, 0.5f, 200.0f);
 
         if (mpMgnModelMorf->checkFrame(19.0f)) {
-            gravity = -5.0f;
-            speed.y = 35.0f;
-            speedF = 70.0f;
+            gravity = -5.0f * DELTA_TIME;
+            speed.y = 35.0f * DELTA_TIME;
+            speedF = 70.0f * DELTA_TIME;
             mMoveMode = 6;
             current.angle.y = shape_angle.y + 0x8000;
         }
@@ -2754,7 +2754,7 @@ void daB_MGN_c::executeOpening() {
 
         if (mpMgnModelMorf->isStop()) {
             setBck(BCK_MGN_WAIT, J3DFrameCtrl::EMode_LOOP, 3.0f, 1.0f);
-            field_0xa9c = 30;
+            mTimer = 30 * DELTA_TIME;
             mMoveMode = 8;
         }
         break;
@@ -2765,7 +2765,7 @@ void daB_MGN_c::executeOpening() {
 
         cLib_addCalcPos2(&mDemoCamCenter, work, 0.5f, 200.0f);
 
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             setBck(BCK_MGN_WAIT2, J3DFrameCtrl::EMode_NONE, 3.0f, 1.0f);
             mMoveMode = 10;
             mDemoCamEyeStep = 0.0f;
@@ -2784,7 +2784,7 @@ void daB_MGN_c::executeOpening() {
 
         if (mpMgnModelMorf->isStop()) {
             setBck(BCK_MGN_WAIT, J3DFrameCtrl::EMode_LOOP, 3.0f, 1.0f);
-            field_0xa9c = 30;
+            mTimer = 30 * DELTA_TIME;
             mMoveMode = 11;
         }
         break;
@@ -2798,7 +2798,7 @@ void daB_MGN_c::executeOpening() {
         work.set(0.0f, 100.0f, -2590.0f);
         cLib_addCalcPos2(&mDemoCamEye, work, 0.1f, mDemoCamEyeStep);
 
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             setActionMode(ACTION_DASH_e, 0);
             mDemoCamCenter.set(100.0f, 100.0f, -2190.0f);
             mDemoCamEye.set(0.0f, 100.0f, -2690.0f);
@@ -2870,7 +2870,7 @@ void daB_MGN_c::executeDeath() {
         mDemoCamCenter += sp48;
 
         mDemoCamFovy = 68.0f;
-        field_0xa9c = 10;
+        mTimer = 10;
 
         sp54.set(0.0f, 0.0f, 0.0f);
         player->setPlayerPosAndAngle(&sp54, fopAcM_searchPlayerAngleY(this) + -0x8000, 0);
@@ -2899,7 +2899,7 @@ void daB_MGN_c::executeDeath() {
         mDoMtx_stack_c::multVecZero(&sp60);
         cLib_addCalcPos2(&mDemoCamCenter, sp60, 0.1f, 50.0f);
 
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             cLib_addCalcAngleS2(&field_0xae2, 0x40, 8, 8);
             cLib_addCalcAngleS2(&field_0xae0, sp8 + 0x600, 0x20, field_0xae2);
             cLib_addCalc2(&field_0xadc, 500.0f, 0.1f, 7.0f);
@@ -2952,26 +2952,26 @@ void daB_MGN_c::executeDeath() {
         if (mpMgnModelMorf->isStop()) {
             if (!daPy_py_c::checkNowWolf()) {
                 mMoveMode = 4;
-                field_0xa9c = 60;
+                mTimer = 60;
             } else {
                 mMoveMode = 5;
-                field_0xa9c = 30;
+                mTimer = 30;
             }
         }
         break;
 
     case 4:
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             mMoveMode = 100;
             dStage_changeScene(2, 0.0f, 0, fopAcM_GetRoomNo(this), 0, -1);
         }
         break;
 
     case 5:
-        if (field_0xa9c == 0) {
+        if (mTimer == 0) {
             player->changeDemoMode(0x3A, 0, 0, 0);
             mMoveMode = 4;
-            field_0xa9c = 100;
+            mTimer = 100;
         }
         break;
         
@@ -3003,8 +3003,8 @@ void daB_MGN_c::executeJump() {
         cLib_chaseF(&field_0xae8, 0.0f, 0.05f);
 
         if (mpMgnModelMorf->isStop()) {
-            speed.y = nREG_F(6) + 80.0f;
-            speedF = 10.0f;
+            speed.y = (nREG_F(6) + 80.0f) * DELTA_TIME;
+            speedF = 10.0f * DELTA_TIME;
         }
 
         if (mpMgnBtk->checkFrame(10.0f)) {
@@ -3295,8 +3295,8 @@ void daB_MGN_c::cc_set() {
 }
 
 int daB_MGN_c::execute() {
-    if (field_0xa9c != 0) {
-        field_0xa9c--;
+    if (mTimer != 0) {
+        mTimer--;
     }
 
     if (mDamageInvulnerabilityTimer != 0) {

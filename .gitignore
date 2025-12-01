@@ -30,12 +30,13 @@ ctx.*
 objdiff.json
 compile_commands.json
 
-# Miscellaneous
-/*.txt
-*.exe
-
 # MacOS
 .DS_Store
 
 # ISOs
 *.iso
+
+# Environment files
+.env
+# Claude Code
+.claude

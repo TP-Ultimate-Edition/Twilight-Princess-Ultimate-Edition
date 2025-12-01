@@ -994,7 +994,7 @@ void daNpc_Kolin_c::setAttnPos() {
 
     static cXyz prtclScl(1.0f, 1.0f, 1.0f);
     setFootPos();
-    if (3.0f < speedF) {
+    if (3.0f * DELTA_TIME < speedF) {
         setFootPrtcl(&prtclScl, 9.0f, 0.0f);
     }
 }

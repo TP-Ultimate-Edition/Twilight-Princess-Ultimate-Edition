@@ -13,6 +13,7 @@
 #include "d/d_save.h"
 #include "f_op/f_op_actor_mng.h"
 #include "f_op/f_op_camera_mng.h"
+#include "res/Object/AlAnm.h"
 
 class J2DAnmColorKey;
 class J2DAnmTransformKey;
@@ -1972,7 +1973,9 @@ public:
     /* 0x64 */ f32 mBossShootSpeed;
     /* 0x68 */ f32 mBossReturnSpeed;
     /* 0x6C */ f32 mBossStickReturnSpeed;
-};  // Size: 0x70
+    /* 0x70 */ f32 mHookTipAnimationSteps;
+    /* 0x74 */ f32 mLockCursorSpinnerSpeed;
+};  // Size: 0x78
 
 class daAlinkHIO_hookshot_c0 {
 public:
@@ -6708,8 +6711,8 @@ public:
     bool checkHorseTurnLAnime() const { return checkUpperAnime(0x24C); }
     bool checkHorseTurnRAnime() const { return checkUpperAnime(0x24D); }
     bool checkHorseTurnAnime() const { return checkHorseTurnLAnime() || checkHorseTurnRAnime(); }
-    bool checkHookshotShootAnime() const { return checkUpperAnime(0x18C); }
-    bool checkHookshotReadyAnime() const { return checkUpperAnime(0x18D); }
+    bool checkHookshotShootAnime() const { return checkUpperAnime(dRes_ID_ALANM_BCK_HSSHOOT_e); }
+    bool checkHookshotReadyAnime() const { return checkUpperAnime(dRes_ID_ALANM_BCK_HSWAIT_e); }
     BOOL checkHookshotAnime() const {
         return checkHookshotReadyAnime() || checkHookshotShootAnime();
     }
@@ -7574,8 +7577,8 @@ public:
     /* 0x030CA */ s16 field_0x30ca;
     /* 0x030CC */ s16 field_0x30cc;
     /* 0x030CE */ u16 mKeepItem;
-    /* 0x030D0 */ s16 field_0x30d0;
-    /* 0x030D2 */ s16 field_0x30d2;
+    /* 0x030D0 */ float mWolfDashDistTimer;
+    /* 0x030D2 */ float mWolfDashTimer;
     /* 0x030D4 */ s16 field_0x30d4;
     /* 0x030D6 */ s16 field_0x30d6;
     /* 0x030D8 */ u8 field_0x30d8[0x14];

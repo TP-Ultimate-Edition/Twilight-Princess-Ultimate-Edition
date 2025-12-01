@@ -113,7 +113,7 @@ private:
     /* 0x0A92 */ s16 field_0xa92;
     /* 0x0A94 */ u32 mShadowKey;
     /* 0x0A98 */ u16 mDamageInvulnerabilityTimer;
-    /* 0x0A9C */ int field_0xa9c;
+    /* 0x0A9C */ int mTimer;
     /* 0x0AA0 */ int field_0xaa0;
     /* 0x0AA4 */ int mBloodEffTimer;
     /* 0x0AA8 */ int field_0xaa8;

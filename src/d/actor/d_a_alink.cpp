@@ -6384,6 +6384,7 @@ void daAlink_c::setFrameCtrl(daPy_frameCtrl_c* i_ctrl, u8 i_attr, s16 i_start, s
         }
     }
 
+    i_rate *= DELTA_TIME; // Boofener: Scale all animation rates for 60fps
     i_ctrl->setFrameCtrl(i_attr, i_start, i_end, i_rate, i_frame);
 }
 
@@ -9743,7 +9744,7 @@ void daAlink_c::decideCommonDoStatus() {
                     }
                 } else if (checkAttentionLock()) {
                     setDoStatus(0x8B);
-                } else if (field_0x30d2 == 0 &&
+                } else if (mWolfDashTimer == 0 &&
                            (field_0x33a8 > getFrontRollRate() || checkAttentionLock()))
                 {
                     setDoStatus(9);
@@ -12097,8 +12098,8 @@ void daAlink_c::setSpecialGravity(f32 i_gravity, f32 i_speed, int i_offFlag) {
         onNoResetFlg3(FLG3_UNK_4000);
     }
 
-    gravity = i_gravity;
-    maxFallSpeed = i_speed;
+    gravity = i_gravity * DELTA_TIME; // Boofener: applies delta time to gravity
+    maxFallSpeed = i_speed * DELTA_TIME; // Boofener: applies delta time to max fall speed
 }
 
 void daAlink_c::transAnimeProc(cXyz* param_0, f32 param_1, f32 param_2) {
@@ -12448,16 +12449,22 @@ void daAlink_c::posMove() {
             Vec spFC = {0.0f, 0.0f, 0.0f};
             spFC.z = speedF;
             mDoMtx_stack_c::multVecSR(&spFC, &speed);
-            current.pos += speed;
-            current.pos.x += field_0x342c;
-            current.pos.z += field_0x3430;
+            // Ogathereal/Boofener: Movement scaled for 60fps
+            current.pos.x += speed.x * DELTA_TIME;
+            current.pos.y += speed.y * DELTA_TIME;
+            current.pos.z += speed.z * DELTA_TIME;
+            current.pos.x += field_0x342c * DELTA_TIME;
+            current.pos.z += field_0x3430 * DELTA_TIME;
         } else {
-            current.pos += speed;
-            current.pos.x += field_0x342c;
-            current.pos.z += field_0x3430;
+            // Ogathereal/Boofener: Movement scaled for 60fps
+            current.pos.x += speed.x * DELTA_TIME;
+            current.pos.y += speed.y * DELTA_TIME;
+            current.pos.z += speed.z * DELTA_TIME;
+            current.pos.x += field_0x342c * DELTA_TIME;
+            current.pos.z += field_0x3430 * DELTA_TIME;
 
             if (checkEndResetFlg1(ERFLG1_UNK_800) && checkStageName("F_SP113")) {
-                current.pos.y -= 50.0f;
+                current.pos.y -= 50.0f * DELTA_TIME; // Boofener: enter stage distance scaled for 60fps
             }
         }
     }
@@ -17185,12 +17192,12 @@ int daAlink_c::execute() {
         field_0x2fc4--;
     }
 
-    if (field_0x30d2 != 0) {
-        field_0x30d2--;
+    if (mWolfDashTimer != 0) {
+        mWolfDashTimer -= DELTA_TIME; // Boofener: scaled wolf link dash increment timer
     }
 
-    if (field_0x30d0 != 0) {
-        field_0x30d0--;
+    if (mWolfDashDistTimer != 0) {
+        mWolfDashDistTimer -= DELTA_TIME; // Boofener: scaled wolf link dash distance timer
     } else {
         offNoResetFlg1(FLG1_DASH_MODE);
     }
