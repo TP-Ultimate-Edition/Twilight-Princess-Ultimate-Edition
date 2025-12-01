@@ -4235,8 +4235,8 @@ public:
     /* 0x030CA */ s16 field_0x30ca;
     /* 0x030CC */ s16 field_0x30cc;
     /* 0x030CE */ u16 mKeepItem;
-    /* 0x030D0 */ s16 field_0x30d0;
-    /* 0x030D2 */ s16 field_0x30d2;
+    /* 0x030D0 */ float mWolfDashDistTimer;
+    /* 0x030D2 */ float mWolfDashTimer;
     /* 0x030D4 */ s16 field_0x30d4;
     /* 0x030D6 */ s16 field_0x30d6;
     /* 0x030D8 */ u8 field_0x30d8[0x14];

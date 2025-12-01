@@ -11,5 +11,7 @@ d_a_alink {
     field_0x2180[0] 	=   	leftEyeBone
     field_0x2180[1] 	=   	rightEyeBone
     field_0x2180[2] 	=   	eyeMatController[2]
+    field_0x30d2        =       mWolfDashTimer
+    field_0x30d0        =       mWolfDashDistTimer
 }
     

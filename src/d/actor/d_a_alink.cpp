@@ -10109,7 +10109,7 @@ void daAlink_c::decideCommonDoStatus() {
                     }
                 } else if (checkAttentionLock()) {
                     setDoStatus(0x8B);
-                } else if (field_0x30d2 == 0 &&
+                } else if (mWolfDashTimer == 0 &&
                            (field_0x33a8 > getFrontRollRate() || checkAttentionLock()))
                 {
                     setDoStatus(9);
@@ -17794,12 +17794,12 @@ int daAlink_c::execute() {
         field_0x2fc4--;
     }
 
-    if (field_0x30d2 != 0) {
-        field_0x30d2--;
+    if (mWolfDashTimer != 0) {
+        mWolfDashTimer -= DELTA_TIME; // Boofener: scaled wolf link dash increment timer
     }
 
-    if (field_0x30d0 != 0) {
-        field_0x30d0--;
+    if (mWolfDashDistTimer != 0) {
+        mWolfDashDistTimer -= DELTA_TIME; // Boofener: scaled wolf link dash distance timer
     } else {
         offNoResetFlg1(FLG1_DASH_MODE);
     }
