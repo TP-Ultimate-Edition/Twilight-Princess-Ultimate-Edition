@@ -85,10 +85,12 @@ static const float INF = 2000000000.0f;
 
 // Boofener: Deltatime system for frame-independent physics
 extern float g_deltaTime;
+extern int g_scaleTime;
 extern float g_targetFrameTime;
 extern float g_targetFramerate;
 extern int g_shouldUpdateLogic;  // Skip logic updates on render-only frames (0=false, 1=true)
 #define DELTA_TIME g_deltaTime
+#define SCALE_TIME g_scaleTime
 void updateDeltaTime();
 void setTargetFramerate(float fps);
 float getTargetFramerate();

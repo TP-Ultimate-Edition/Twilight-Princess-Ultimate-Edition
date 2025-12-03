@@ -42,6 +42,7 @@
 
 // Boofener: Deltatime and frame-skipping system for high FPS
 float g_deltaTime = 0.5f;
+int g_scaleTime = 2;
 float g_targetFrameTime = 1.0f / 30.0f;
 float g_targetFramerate = 60.0f;
 int g_shouldUpdateLogic = 1;
@@ -103,6 +104,7 @@ void updateDeltaTime() {
     // Boofener: Calculate deltaTime based on target framerate
     // 30fps: deltaTime = 1.0, 60fps: deltaTime = 0.5
     g_deltaTime = 30.0f / g_targetFramerate;
+    g_scaleTime = (int)(g_targetFramerate / 30.0f);
 
     s_lastVICount = currentVICount;
     s_lastFrameTime = currentTime;

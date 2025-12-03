@@ -307,7 +307,7 @@ bool daE_OC_c::searchPlayer() {
     if (fopAcM_searchPlayerDistance(this) < mPlayerRange) {
         s16 diff = shape_angle.y - fopAcM_searchPlayerAngleY(this);
         if (fopAcM_searchPlayerDistance(this) < l_HIO.plyr_srch_min_radius) {
-            if (daPy_getPlayerActorClass()->speedF > 12.0f) {
+            if (daPy_getPlayerActorClass()->speedF > 12.0f * DELTA_TIME) {
                 return true;
             }
 
@@ -584,7 +584,7 @@ void daE_OC_c::setActionMode(int i_action, int i_state) {
     mOldActionMode = mActionMode;
     mActionMode = i_action;
     mOcState = i_state;
-    field_0x6c0 = field_0x6c2 = 0;
+    mTimer = field_0x6c2 = 0;
     mSphs_cc[0].OnCoSetBit();
     mSphs_cc[0].OnTgSetBit();
     mSphs_cc[1].OnCoSetBit();
@@ -919,23 +919,23 @@ void daE_OC_c::executeWait() {
             field_0x6bc = shape_angle.y;
             if (field_0x6b4 == 0) {
                 if (cM_rnd() < 0.1f) {
-                    field_0x6c0 = cM_rndF(20.0f) + 10.0f;
+                    mTimer = (cM_rndF(20.0f) + 10.0f) * SCALE_TIME;
                     mOcState = 1;
                 } else {
-                    field_0x6c0 = cM_rndF(30.0f) + 50.0f;
+                    mTimer = (cM_rndF(30.0f) + 50.0f) * SCALE_TIME;
                     mOcState = 3;
                 }
             } else if (home.pos.abs(current.pos) > 100.0f) {
-                field_0x6c0 = cM_rndF(30.0f) + 50.0f;
+                mTimer = (cM_rndF(30.0f) + 50.0f) * SCALE_TIME;
                 mOcState = 3;
             } else {
-                field_0x6c0 = cM_rndF(20.0f) + 10.0f;
+                mTimer = (cM_rndF(20.0f) + 10.0f) * SCALE_TIME;
                 mOcState = 1;
             }
             break;
         case 1:
             cLib_addCalcAngleS(&shape_angle.y, field_0x6bc, 4, 0x800, 0x100);
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 setBck(0x16, 0, 5.0f, 1.0f);
                 mSound.startCreatureVoice(Z2SE_EN_OC_V_SEARCH, -1);
                 mOcState = 2;
@@ -949,13 +949,13 @@ void daE_OC_c::executeWait() {
                     setBck(0x1b, 2, 5.0f, 1.0f);
                     mSound.startCreatureVoice(Z2SE_EN_OC_V_WAIT, -1);
                     if (field_0x6b4 == 0) {
-                        field_0x6c0 = cM_rndF(10.0f) + 10.0f;
+                        mTimer = (cM_rndF(10.0f) + 10.0f) * SCALE_TIME;
                         mOcState = 3;
                     } else if (home.pos.abs(current.pos) > 100.0f) {
-                        field_0x6c0 = cM_rndF(10.0f) + 10.0f;
+                        mTimer = (cM_rndF(10.0f) + 10.0f) * SCALE_TIME;
                         mOcState = 3;
                     } else {
-                        field_0x6c0 = cM_rndFX(30.0f) + 300.0f;
+                        mTimer = (cM_rndFX(30.0f) + 300.0f) * SCALE_TIME;
                         mOcState = 1;
                         field_0x6bc = home.angle.y;
                     }
@@ -963,7 +963,7 @@ void daE_OC_c::executeWait() {
             }
             break;
         case 3:
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 setActionMode(E_OC_ACTION_WALK, 0);
             }
             break;
@@ -993,7 +993,7 @@ void daE_OC_c::executeWalk() {
     switch (mOcState) {
         case 0:
             setBck(0x1d, 2, 5.0f, 1.0f);
-            field_0x6c0 = cM_rndFX(50.0f) + 150.0f;
+            mTimer = (cM_rndFX(50.0f) + 150.0f) * SCALE_TIME;
             mOcState = 1;
             if (field_0x6b4 == 0) {
                 if (home.pos.abs(current.pos) >= 500.0f) {
@@ -1008,11 +1008,11 @@ void daE_OC_c::executeWalk() {
             field_0x6be = 0;
             break;
         case 1:
-            if ((field_0x6c0 & 0x7) == 0) {
+            if ((mTimer & 0x7) == 0) {
                 int before_bg_val = checkBeforeBg();
                 switch (before_bg_val) {
                     case 1:
-                        field_0x6c0 = 0;
+                        mTimer = 0;
                         field_0x6be = 0;
                         break;
                     case 2:
@@ -1031,7 +1031,7 @@ void daE_OC_c::executeWalk() {
                 field_0x6bc += field_0x6be;
             }
 
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 setActionMode(E_OC_ACTION_WAIT, 0);
             } else if (field_0x6b4 == 1 && home.pos.abs(current.pos) < 100.0f) {
                 setActionMode(E_OC_ACTION_WAIT, 0);
@@ -1066,11 +1066,11 @@ void daE_OC_c::executeTalk() {
         case 0:
             speedF = 0.0f;
             field_0x6c6 = cM_rndFX(10.0f) + 300.0f;
-            field_0x6c0 = cM_rndF(30.0f);
+            mTimer = (cM_rndF(30.0f)) * SCALE_TIME;
             mOcState = 1;
             // fallthrough intentional.
         case 1: {
-            if (field_0x6c0) {
+            if (mTimer) {
                 mPrevShapeAngle = shape_angle.y;
                 return;
             }
@@ -1083,17 +1083,17 @@ void daE_OC_c::executeTalk() {
                 setBck(0x19, 2, 5.0f, 1.0f);
                 mSound.startCreatureVoice(Z2SE_EN_OC_V_TALK, -1);
                 mOcState = 2;
-                field_0x6c0 = cM_rndF(30.0f) + 30.0f;
+                mTimer = (cM_rndF(30.0f) + 30.0f) * SCALE_TIME;
             } else {
                 setBck(0x18, 2, 5.0f, 1.0f);
                 mSound.startCreatureVoice(Z2SE_EN_OC_V_STAND_WAIT, -1);
                 mOcState = 2;
-                field_0x6c0 = cM_rndF(30.0f) + 30.0f;
+                mTimer = (cM_rndF(30.0f) + 30.0f) * SCALE_TIME;
             }
             break;
         }
         case 2:
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 mOcState = 1;
             }
             break;
@@ -1104,7 +1104,7 @@ void daE_OC_c::executeTalk() {
             break;
         case 4:
             mPrevShapeAngle = field_0x6bc;
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 setActionMode(E_OC_ACTION_WAIT, 0);
                 field_0x6c6 = 300;
             }
@@ -1116,7 +1116,7 @@ void daE_OC_c::executeTalk() {
     if (mpTalk == NULL || field_0x6c6 == 0) {
         mPrevShapeAngle = field_0x6bc;
         mOcState = 4;
-        field_0x6c0 = cM_rndF(30.0f);
+        mTimer = (cM_rndF(30.0f)) * SCALE_TIME;
     } else {
         field_0x6bc = mPrevShapeAngle = fopAcM_searchActorAngleY(this, mpTalk);
         field_0x6df = 1;
@@ -1139,8 +1139,8 @@ void daE_OC_c::executeFind() {
             case 2:
                 field_0x6de = 0;
                 if (mOcState == 0) {
-                    field_0x6c0 = 0;
-                    field_0x6c2 = field_0x6c0 + 0x14;
+                    mTimer = 0;
+                    field_0x6c2 = mTimer + 0x14;
                     if (checkBck(0x1c) == 0) {
                         setBck(0x1c, 2, 5.0f, 1.0f);
                         mSound.startCreatureVoice(Z2SE_EN_OC_V_WAIT_ST, -1);
@@ -1149,9 +1149,9 @@ void daE_OC_c::executeFind() {
                     field_0x6de = 1;
                 } else if (mOcState == 1) {
                     if (field_0x6e2) {
-                        field_0x6c0 = l_HIO.demo_waiting_time;
+                        mTimer = l_HIO.demo_waiting_time * SCALE_TIME;
                     } else {
-                        field_0x6c0 = cM_rndF(10.0f) + 20.0f;
+                        mTimer = (cM_rndF(10.0f) + 20.0f) * SCALE_TIME;
                     }
 
                     field_0x6e2 = 0;
@@ -1159,7 +1159,7 @@ void daE_OC_c::executeFind() {
                     setBck(0xd, 0, 5.0f, 1.0f);
                     mSound.startCreatureVoice(Z2SE_EN_OC_V_FIND, -1);
                 } else {
-                    field_0x6c0 = cM_rndF(5.0f) + 5.0f;
+                    mTimer = (cM_rndF(5.0f) + 5.0f) * SCALE_TIME;
                     setBck(0xd, 0, 5.0f, 1.0f);
                     mSound.startCreatureVoice(Z2SE_EN_OC_V_FIND, -1);
                 }
@@ -1168,7 +1168,7 @@ void daE_OC_c::executeFind() {
                 speedF = 0.0f;
             /* fallthrough intentional */
             case 3:
-                if (field_0x6c0 == 0) {
+                if (mTimer == 0) {
                     if (field_0x6de || pl_dist < 400.0f) {
                         setBck(0x1e, 2, 5.0f, 1.3f);
                         field_0x6de = 1;
@@ -1179,7 +1179,7 @@ void daE_OC_c::executeFind() {
                     }
 
                     mOcState = 4;
-                    field_0x6c0 = 0x1e;
+                    mTimer = 0x1e * SCALE_TIME;
                 }
 
                 break;
@@ -1294,7 +1294,7 @@ void daE_OC_c::executeFind() {
                     }
                 }
 
-                if (field_0x6c0 == 0) {
+                if (mTimer == 0) {
                     if (!searchPlayer2()) {
                         setActionMode(E_OC_ACTION_WAIT, 0);
                     } else if (field_0x6e3) {
@@ -1537,9 +1537,9 @@ void daE_OC_c::executeDamage() {
             mSound.startCreatureVoice(Z2SE_EN_OC_V_DAMAGE, -1);
             mOcState = 5;
             if (s16(cLib_distanceAngleS(shape_angle.y, fopAcM_searchPlayerAngleY(this))) < 0x4000) {
-                speedF = -20.0f;
+                speedF = -20.0f * DELTA_TIME;
             } else {
-                speedF = 20.0f;
+                speedF = 20.0f * DELTA_TIME;
             }
             onHeadLockFlg();
             break;
@@ -1611,8 +1611,8 @@ void daE_OC_c::executeBigDamage() {
             }
             offTgSph();
             mOcState = 3;
-            speed.y = 40.0f;
-            speedF = 20.0f;
+            speed.y = 40.0f * DELTA_TIME;
+            speedF = 20.0f * DELTA_TIME;
             current.angle.y = mAtInfo.mHitDirection.y + 0x8000;
             shape_angle.y = mAtInfo.mHitDirection.y;
             field_0x6be = 0;
@@ -1667,7 +1667,7 @@ void daE_OC_c::executeBigDamage() {
                     mOcState = 5;
                     onDownFlg();
                     setStabPos();
-                    field_0x6c0 = cM_rndFX(10.0f) + 45.0f;
+                    mTimer = (cM_rndFX(10.0f) + 45.0f) * SCALE_TIME;
                 }
             }
             break;
@@ -1682,9 +1682,9 @@ void daE_OC_c::executeBigDamage() {
                 mSphs_cc[0].OffCoSetBit();
                 mSphs_cc[1].OffCoSetBit();
                 mStts.ClrCcMove();
-                field_0x6c0 = 0x1e;
+                mTimer = 0x1e * SCALE_TIME;
             }
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 setBck(0x17, 0, 5.0f, 1.0f);
                 mSound.startCreatureVoice(Z2SE_EN_OC_V_STAND, -1);
                 mOcState = 6;
@@ -1714,13 +1714,13 @@ void daE_OC_c::executeWatch() {
                 setBck(0x1b, 2, 5.0f, 1.0f);
                 mSound.startCreatureVoice(Z2SE_EN_OC_V_WAIT, -1);
             }
-            field_0x6c0 = (s8) (cM_rndFX(15.0f) + 35.0f);
+            mTimer = (s8) (cM_rndFX(15.0f) + 35.0f) * SCALE_TIME;
             mOcState = 1;
         case 1:
             if (mpDamage && fopAcM_IsActor(mpDamage)) {
                 mPrevShapeAngle = fopAcM_searchActorAngleY(this, mpDamage);
             }
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 setActionMode(E_OC_ACTION_FIND, 2);
             }
             break;
@@ -1733,11 +1733,11 @@ void daE_OC_c::executeWatch() {
                 setBck(0x1b, 2, 5.0f, 1.0f);
                 mSound.startCreatureVoice(Z2SE_EN_OC_V_WAIT, -1);
             }
-            field_0x6c0 = (s8) (cM_rndFX(15.0f) + 35.0f);
+            mTimer = (s8) (cM_rndFX(15.0f) + 35.0f) * SCALE_TIME;
             mOcState = 3;
         case 3:
             mPrevShapeAngle = cLib_targetAngleY(&current.pos, &mWatchPos);
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 mOcState = 4;
                 setBck(7, 0, 5.0f, 1.0f);
                 mSound.startCreatureVoice(Z2SE_EN_OC_V_CRY, -1);
@@ -1773,21 +1773,21 @@ void daE_OC_c::executeSoundWatch() {
             speedF = 0.0f;
             setBck(0xd, 0, 5.0f, 1.0f);
             mSound.startCreatureVoice(Z2SE_EN_OC_V_FIND, -1);
-            field_0x6c0 = cM_rndF(30.0f) + 60.0f;
+            mTimer = (cM_rndF(30.0f) + 60.0f) * SCALE_TIME;
             mOcState = 1;
         case 1:
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 setBck(0xb, 2, 5.0f, 1.2f);
                 mSound.startCreatureVoice(Z2SE_EN_OC_V_DASH, -1);
                 mOcState = 2;
-                field_0x6c0 = 0x3c;
+                mTimer = 0x3c * SCALE_TIME;
             }
             break;
         case 2:
             cLib_chaseF(&speedF, 20.0f + nREG_F(0), 1.0f);
             cLib_addCalcAngleS(&shape_angle.y, field_0x6bc, 4, 0x800, 0x100);
             current.angle.y = shape_angle.y;
-            if (current.pos.abs(mWatchPos) < 300.0f || field_0x6c0 == 0) {
+            if (current.pos.abs(mWatchPos) < 300.0f || mTimer == 0) {
                 setBck(0x16, 0, 5.0f, 1.0f);
                 mOcState = 3;
                 speedF = 0.0f;
@@ -1804,7 +1804,7 @@ void daE_OC_c::executeSoundWatch() {
 }
 
 bool daE_OC_c::checkBeforeDeath() {
-    if (mActionMode == E_OC_ACTION_DEATH && mOcState >= 2 && field_0x6c0 < 2) {
+    if (mActionMode == E_OC_ACTION_DEATH && mOcState >= 2 && mTimer < 2) {
         return true;
     }
 
@@ -1821,9 +1821,9 @@ void daE_OC_c::executeDeath() {
             offTgSph();
             if (mOcState == 0) {
                 mOcState = 2;
-                field_0x6c0 = 0x1e;
+                mTimer = 0x1e * SCALE_TIME;
             } else {
-                field_0x6c0 = 0x2d;
+                mTimer = 0x2d * SCALE_TIME;
                 setBck(0xe, 0, 0.0f, 1.0f);
                 mSound.startCreatureVoice(Z2SE_EN_OC_V_FINISH, -1);
                 mOcState = 3;
@@ -1837,7 +1837,7 @@ void daE_OC_c::executeDeath() {
             }
         case 2:
             cLib_chaseF(&speedF, 0.0f, 1.0f);
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 if (mName == "E_OC") {
                     fopAcM_createDisappear(this, &current.pos, 10, 0, 4);
                 } else {
@@ -1958,10 +1958,10 @@ void daE_OC_c::executeDemoMaster() {
             mSound.startCreatureVoice(Z2SE_EN_OC_V_SAKEBU, -1);
             setBck(7, 0, 5.0f, 1.0f);
             mOcState = 2;
-            field_0x6c0 = 15;
+            mTimer = 15 * SCALE_TIME;
             break;
         case 2:
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 daPy_getPlayerActorClass()->changeOriginalDemo();
                 daPy_getPlayerActorClass()->changeDemoMode(0x19, 0, 0, 0);
                 mOcState = 4;
@@ -1986,16 +1986,16 @@ void daE_OC_c::executeDemoMaster() {
                     mOcState = 6;
                     setBck(0x10, 0, 5.0f, 1.0f);
                     mSound.startCreatureVoice(Z2SE_EN_OC_V_JUMP, -1);
-                    speedF = 10.0f;
-                    speed.y = 40.0f;
-                    field_0x6c0 = 0x28;
+                    speedF = 10.0f * DELTA_TIME;
+                    speed.y = 40.0f * DELTA_TIME;
+                    mTimer = 0x28 * SCALE_TIME;
                     daPy_getPlayerActorClass()->changeDemoMode(1, 0, 0, 0);
                     daPy_getPlayerActorClass()->cancelOriginalDemo();
                 }
             }
             break;
         case 6:
-            if (field_0x6c0 > 20) {
+            if (mTimer > 20 * SCALE_TIME) {
                 cLib_addCalc2(&field_0x6f8.y, current.pos.y + 100.0f, 0.2f, 10.0f);
             }
 
@@ -2003,7 +2003,7 @@ void daE_OC_c::executeDemoMaster() {
                 setBck(0x11, 0, 5.0f, 1.0f);
             }
 
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 mOcState = 7;
                 field_0x6f8.set(16450.0f, 3050.0f, 8250.0f);
                 field_0x6f8 += my_vec_0;
@@ -2014,11 +2014,11 @@ void daE_OC_c::executeDemoMaster() {
                 current.pos += my_vec_0;
                 shape_angle.y = current.angle.y =  fopAcM_searchPlayerAngleY(this);
                 speedF = 0.0f;
-                field_0x6c0 = 10;
+                mTimer = 10 * SCALE_TIME;
             }
             break;
         case 7:
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 cLib_addCalc2(&field_0x6f8.y, my_vec_0.y + 2950.0f, 0.1f, 10.0f);
             }
 
@@ -2079,8 +2079,8 @@ void daE_OC_c::executeDemoChild() {
                     setBck(0x10, 0, 5.0f, 1.0f);
                     mSound.startCreatureVoice(Z2SE_EN_OC_V_JUMP, -1);
                     mOcState = 6;
-                    speedF = 10.0f;
-                    speed.y = 40.0f;
+                    speedF = 10.0f * DELTA_TIME;
+                    speed.y = 40.0f * DELTA_TIME;
                 }
                 break;
             case 6:
@@ -2161,7 +2161,7 @@ void daE_OC_c::executeFallDead() {
                 }
                 mOcState = 2;
             }
-            field_0x6c0 = 100;
+            mTimer = 100 * SCALE_TIME;
             return;
         case 1:
             if (field_0x6bc != 0) {
@@ -2171,7 +2171,7 @@ void daE_OC_c::executeFallDead() {
             }
         case 2:
             cLib_chaseF(&speedF, 0.0f, 0.2f);
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 fopAcM_delete(this);
                 if (mDefeatedSwitch != 0xFF && !dComIfGs_isSwitch(mDefeatedSwitch, fopAcM_GetRoomNo(this))) {
                     dComIfGs_onSwitch(mDefeatedSwitch, fopAcM_GetRoomNo(this));
@@ -2291,7 +2291,7 @@ void daE_OC_c::executeMoveOut() {
                     setBck(0x1C, 2, 5.0f, 1.0f);
                 }
 
-                field_0x6c0 = 30;
+                mTimer = 30 * SCALE_TIME;
                 mOcState = 2;
             }
         // fallthrough intentional
@@ -2301,7 +2301,7 @@ void daE_OC_c::executeMoveOut() {
             cLib_chaseF(&speedF, -15.0f, 1.0f);
             if (home.pos.absXZ(current.pos) < mMoveRange) {
                 setBck(0x1C, 2, 5.0f, 1.0f);
-                field_0x6c0 = 30;
+                mTimer = 30 * SCALE_TIME;
                 mOcState = 2;
             }
 
@@ -2338,7 +2338,7 @@ void daE_OC_c::executeMoveOut() {
             }
 
             current.angle.y = shape_angle.y;
-            if (field_0x6c0 == 0) {
+            if (mTimer == 0) {
                 if (home.pos.abs(daPy_getPlayerActorClass()->current.pos) < (mMoveRange - 200.0f)) {
                     setActionMode(E_OC_ACTION_FIND, 0);
                     return;
@@ -2552,8 +2552,8 @@ void daE_OC_c::cc_set() {
 }
 
 int daE_OC_c::execute() {
-    if (field_0x6c0) {
-        --field_0x6c0;
+    if (mTimer) {
+        --mTimer;
     }
     if (field_0x6c2) {
         --field_0x6c2;
@@ -2764,7 +2764,7 @@ cPhs__Step daE_OC_c::create() {
             mAtInfo.mpSound = &mSound;
             mAtInfo.mPowerType = 1;
             current.angle.x = shape_angle.x = 0;
-            gravity = -5.0f;
+            gravity = -5.0f * DELTA_TIME;
             switch (field_0x6b4) {
                 case 2:
                     break;

@@ -112,7 +112,7 @@ private:
     /* 0x6b8 */ u32 mShadowKey;
     /* 0x6bc */ s16 field_0x6bc;
     /* 0x6be */ s16 field_0x6be;
-    /* 0x6c0 */ s16 field_0x6c0;
+    /* 0x6c0 */ s16 mTimer;
     /* 0x6c2 */ s16 field_0x6c2;
     /* 0x6c4 */ s16 field_0x6c4;
     /* 0x6c6 */ s16 field_0x6c6;

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./build_iso.bat)",
+      "Bash(python configure.py:*)",
+      "Bash(ninja:*)",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

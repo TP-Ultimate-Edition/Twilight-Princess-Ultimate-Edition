@@ -40,7 +40,7 @@ void cLib_memSet(void* ptr, int value, unsigned long num) {
 f32 cLib_addCalc(f32* pvalue, f32 target, f32 scale, f32 maxStep, f32 minStep) {
     f32 step = 0.0f;
     if (*pvalue != target) {
-        step = scale * (target - *pvalue);
+        step = (scale * DELTA_TIME) * (target - *pvalue);
         if (step >= minStep || step <= -minStep) {
             if (step > maxStep) {
                 step = maxStep;
@@ -239,7 +239,7 @@ void cLib_addCalcPosXZ2(cXyz* ppos, const cXyz& target, f32 scale, f32 maxStep) 
 s16 cLib_addCalcAngleS(s16* pvalue, s16 target, const s16 scale, s16 maxStep, s16 minStep) {
     s16 diff = target - *pvalue;
     if (*pvalue != target) {
-        s16 step = (diff) / scale;
+        s16 step = (diff) / (scale * DELTA_TIME);
         if (step > minStep || step < -minStep) {
             if (step > maxStep) {
                 step = maxStep;
@@ -354,7 +354,7 @@ int cLib_chaseF(f32* pvalue, f32 target, f32 step) {
         }
         // DELTA_TIME scales the amount by which the target value is approached based on framerate
         *pvalue += step * DELTA_TIME;
-        if (step * (*pvalue - target) >= 0) {
+        if ((step * DELTA_TIME) * (*pvalue - target) >= 0) {
             *pvalue = target;
             return 1;
         }
@@ -417,12 +417,12 @@ int cLib_chasePosXZ(cXyz* pvalue, const cXyz& target, f32 step) {
  * @return TRUE when target is reached, FALSE otherwise
  */
 int cLib_chaseAngleS(s16* pvalue, s16 target, s16 step) {
-    if (step) {
+    if (step * DELTA_TIME) {
         if ((s16)(*pvalue - target) > 0) {
             step = -step;
         }
-        *pvalue += step;
-        if (step * (s16)(*pvalue - target) >= 0) {
+        *pvalue += step * DELTA_TIME;
+        if ((step * DELTA_TIME) * (s16)(*pvalue - target) >= 0) {
             *pvalue = target;
             return 1;
         }
