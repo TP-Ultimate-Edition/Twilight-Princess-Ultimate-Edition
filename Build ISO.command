@@ -25,7 +25,8 @@ if [ -z "$PYTHON" ]; then
     echo "Install with: brew install python@3.11"
     echo "Terminal will close in 30 seconds..."
     sleep 30
-    osascript -e 'tell application "Terminal" to close first window' & exit 1
+    osascript -e 'tell application "Terminal" to close first window' > /dev/null 2>&1
+    exit 1
 fi
 
 echo "✓ Using $PYTHON"
@@ -36,7 +37,8 @@ if ! command -v ninja >/dev/null 2>&1; then
     echo "Install with: brew install ninja"
     echo "Terminal will close in 30 seconds..."
     sleep 30
-    osascript -e 'tell application "Terminal" to close first window' & exit 1
+    osascript -e 'tell application "Terminal" to close first window' > /dev/null 2>&1
+    exit 1
 fi
 
 echo "✓ ninja found"
@@ -60,7 +62,8 @@ if [ ! -f "$VANILLA_ISO" ]; then
         echo "No ISO selected. Exiting."
         echo "Terminal will close in 30 seconds..."
         sleep 30
-        osascript -e 'tell application "Terminal" to close first window' & exit 1
+        osascript -e 'tell application "Terminal" to close first window' > /dev/null 2>&1
+        exit 1
     fi
     
     echo "Copying ISO..."
@@ -86,7 +89,8 @@ if [ $? -ne 0 ]; then
     echo "❌ Configure failed"
     echo "Terminal will close in 30 seconds..."
     sleep 30
-    osascript -e 'tell application "Terminal" to close first window' & exit 1
+    osascript -e 'tell application "Terminal" to close first window' > /dev/null 2>&1
+    exit 1
 fi
 
 echo ""
@@ -101,21 +105,45 @@ if [ $? -ne 0 ]; then
         echo "❌ Build failed"
         echo "Terminal will close in 30 seconds..."
         sleep 30
-        osascript -e 'tell application "Terminal" to close first window' & exit 1
+        osascript -e 'tell application "Terminal" to close first window' > /dev/null 2>&1
+        exit 1
     fi
 fi
 
 echo ""
 echo "[3/3] Creating ISO..."
-mkdir -p output_iso
-export PYTHONPATH="$(pwd)/tools:$PYTHONPATH"
-$PYTHON tools/rebuild-decomp-tp.py "$VANILLA_ISO" "$OUTPUT_ISO" "."
 
-if [ $? -ne 0 ]; then
-    echo "❌ ISO build failed"
-    echo "Terminal will close in 30 seconds..."
-    sleep 30
-    osascript -e 'tell application "Terminal" to close first window' & exit 1
+# Check if ISO needs rebuilding
+NEEDS_REBUILD=0
+if [ ! -f "$OUTPUT_ISO" ]; then
+    echo "ISO doesn't exist, building..."
+    NEEDS_REBUILD=1
+elif [ -d "build/GZ2E01" ]; then
+    # Check if any build files are newer than the ISO
+    NEWER_FILES=$(find build/GZ2E01 -type f -newer "$OUTPUT_ISO" 2>/dev/null | head -1)
+    if [ ! -z "$NEWER_FILES" ]; then
+        echo "Build files changed, rebuilding ISO..."
+        NEEDS_REBUILD=1
+    else
+        echo "No changes detected, skipping ISO rebuild"
+    fi
+else
+    echo "Build directory missing, rebuilding..."
+    NEEDS_REBUILD=1
+fi
+
+if [ $NEEDS_REBUILD -eq 1 ]; then
+    mkdir -p output_iso
+    export PYTHONPATH="$(pwd)/tools:$PYTHONPATH"
+    $PYTHON tools/rebuild-decomp-tp.py "$VANILLA_ISO" "$OUTPUT_ISO" "."
+
+    if [ $? -ne 0 ]; then
+        echo "❌ ISO build failed"
+        echo "Terminal will close in 30 seconds..."
+        sleep 30
+        osascript -e 'tell application "Terminal" to close first window' > /dev/null 2>&1
+        exit 1
+    fi
 fi
 
 echo ""
@@ -134,4 +162,7 @@ fi
 echo ""
 echo "Done! Terminal will close in 2 seconds..."
 sleep 2
-osascript -e 'tell application "Terminal" to close first window' & exit 0
+
+# Close the terminal window
+osascript -e 'tell application "Terminal" to close (every window whose name contains ".command")' > /dev/null 2>&1
+exit 0
