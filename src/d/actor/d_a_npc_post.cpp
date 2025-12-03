@@ -381,7 +381,7 @@ daNpc_Post_HIOParam const daNpc_Post_Param_c::m = {
     0.0f,
     0.0f,
     0.0f,
-    16.0f,
+    16.0f * DELTA_TIME,
     60,
 };
 
@@ -882,7 +882,7 @@ void daNpc_Post_c::setAttnPos() {
 
     static cXyz prtclScl(1.0f, 1.0f, 1.0f);
     setFootPos();
-    if (3.0f < speedF) {
+    if (3.0f * DELTA_TIME < speedF * DELTA_TIME) {
         setFootPrtcl(&prtclScl, 11.0f, 0.0f);
     }
 }

@@ -60,9 +60,9 @@ static int rope_pt;
 daBd_HIO_c::daBd_HIO_c() {
     id = -1;
     mBasicSize = 1.2f;
-    mFlightSpeed = 20.0f;
-    mGroundSpeed = 3.0f;
-    mFlightTime = 400;
+    mFlightSpeed = 20.0f * DELTA_TIME;
+    mGroundSpeed = 3.0f * DELTA_TIME;
+    mFlightTime = 400 * DELTA_TIME;
     mLinkDetectRange = 300.0f;
     mChirpDist = 60;
     field_0x1E = 0;
@@ -166,9 +166,9 @@ static void pl_check(bd_class* i_this) {
     }
 
     if (daPy_getPlayerActorClass()->checkHorseRide()) {
-        var_f30 = dComIfGp_getHorseActor()->speedF;
+        var_f30 = dComIfGp_getHorseActor()->speedF * DELTA_TIME;
     } else {
-        var_f30 = player->speedF;
+        var_f30 = player->speedF * DELTA_TIME;
     }
 
     var_f31 = l_HIO.mLinkDetectRange + 10.0f * fabsf(var_f30);
