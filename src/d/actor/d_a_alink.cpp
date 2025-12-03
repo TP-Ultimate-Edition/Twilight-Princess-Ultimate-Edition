@@ -11552,6 +11552,14 @@ BOOL daAlink_c::checkNextActionFromButton() {
         return 1;
     }
 
+    // D-pad Down: Instant Wolf/Human Transform
+    if (mDoCPd_c::getTrigDown(PAD_1)) {
+        daMidna_c* midna = (daMidna_c*)getMidnaActor();
+        if (midna != NULL && midna->checkMetamorphoseEnable()) {
+            return procCoMetamorphoseInit();
+        }
+    }
+
     return checkItemChangeFromButton();
 }
 

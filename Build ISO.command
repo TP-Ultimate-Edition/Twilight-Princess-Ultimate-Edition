@@ -126,5 +126,5 @@ if [ -e "$DOLPHIN_PATH" ]; then
 fi
 
 echo ""
-echo "Done! You can close this window."
-read -p "Press Enter to exit..."
+echo "Done! Terminal will close in 2 seconds..."
+sleep 2
