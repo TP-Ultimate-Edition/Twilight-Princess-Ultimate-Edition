@@ -17,6 +17,7 @@
 #include "SSystem/SComponent/c_math.h"
 #include "Z2AudioLib/Z2Instances.h"
 #include "JSystem/JAudio2/JAUSectionHeap.h"
+#include "global.h"  // Boofener: For DELTA_TIME scaling
 #include <cmath.h>
 
 #define ANM_HS_BACK_WALK           6
@@ -840,6 +841,10 @@ void daHorse_c::resetBasAnime() {
 
 int daHorse_c::setDoubleAnime(f32 i_ratio, f32 i_anmSpeedA, f32 i_anmSpeedB, u16 i_anmIdxA, u16 i_anmIdxB,
                               f32 i_morf) {
+    // Boofener: Scale animation speeds for 60fps
+    i_anmSpeedA *= DELTA_TIME;
+    i_anmSpeedB *= DELTA_TIME;
+
     J3DAnmTransform* temp_r26 = m_anmRatio[0].getAnmTransform();
     if (i_morf < 0.0f && (m_anmIdx[0] != ANM_HS_RUN_DASH || i_anmIdxA != ANM_HS_RUN_SLOW) && (m_anmIdx[0] != i_anmIdxA || m_anmIdx[1] != i_anmIdxB)) {
         i_morf = 3.0f;
@@ -902,6 +907,9 @@ int daHorse_c::setDoubleAnime(f32 i_ratio, f32 i_anmSpeedA, f32 i_anmSpeedB, u16
 
 int daHorse_c::setSingleAnime(u16 i_anmIdx, f32 i_speed, f32 i_startF, s16 i_endF, f32 i_morf,
                               BOOL i_isDemoAnm) {
+    // Boofener: Scale animation speed for 60fps
+    i_speed *= DELTA_TIME;
+
     J3DAnmTransform* bck;
     if (i_isDemoAnm) {
         if (i_anmIdx & 0x8000) {
@@ -3164,8 +3172,11 @@ void daHorse_c::setNeckAnimeMorf() {
 }
 
 void daHorse_c::setNeckAnime(u16 i_anmIdx, f32 i_speed, f32 i_startF, s16 i_endF) {
+    // Boofener: Scale animation speed for 60fps
+    i_speed *= DELTA_TIME;
+
     J3DAnmTransform* bck = (J3DAnmTransform*)dComIfG_getObjectRes(l_arcName, i_anmIdx);
-    
+
     s16 endF;
     if (i_endF < 0) {
         endF = bck->getFrameMax();
@@ -3205,18 +3216,18 @@ void daHorse_c::setLashCnt() {
             if (!checkStateFlg0(FLG0_PLAYER_BACK_RIDE_LASH)) {
                 m_lashCnt--;
                 if (m_lashCnt == 0) {
-                    m_lashRecoverTime = HIO.full_spur_recovery_time;
+                    m_lashRecoverTime = HIO.full_spur_recovery_time / DELTA_TIME;  // Boofener: Scale timer init for DELTA_TIME
                 } else {
-                    m_lashRecoverTime = HIO.spur_recovery_time;
+                    m_lashRecoverTime = HIO.spur_recovery_time / DELTA_TIME;  // Boofener: Scale timer init for DELTA_TIME
                 }
             } else {
                 offStateFlg0(FLG0_PLAYER_BACK_RIDE_LASH);
             }
 
             if (checkStateFlg0(FLG0_UNK_2000)) {
-                m_lashAccelerationTime = HIO.kakariko_lash_acceleration_time;
+                m_lashAccelerationTime = HIO.kakariko_lash_acceleration_time / DELTA_TIME;  // Boofener: Scale timer init for DELTA_TIME
             } else {
-                m_lashAccelerationTime = HIO.lash_acceleration_time;
+                m_lashAccelerationTime = HIO.lash_acceleration_time / DELTA_TIME;  // Boofener: Scale timer init for DELTA_TIME
             }
 
             onResetStateFlg0(RFLG0_LASH_DASH_START);
@@ -3228,11 +3239,11 @@ void daHorse_c::setLashCnt() {
         }
     } else if (checkStateFlg0(FLG0_UNK_1)) {
         if (m_lashAccelerationTime > 0) {
-            m_lashAccelerationTime--;
+            m_lashAccelerationTime--;  // Boofener: Decrement scaled timer
         }
 
         if (m_lashRecoverTime > 0) {
-            m_lashRecoverTime--;
+            m_lashRecoverTime--;  // Boofener: Decrement scaled timer
             if (m_lashRecoverTime == 0) {
                 if (m_lashCnt == 0) {
                     m_lashCnt = 6;
@@ -3242,7 +3253,7 @@ void daHorse_c::setLashCnt() {
                 } else {
                     m_lashCnt++;
                     if (m_lashCnt < 6) {
-                        m_lashRecoverTime = HIO.continuous_spur_recovery_time;
+                        m_lashRecoverTime = HIO.continuous_spur_recovery_time / DELTA_TIME;  // Boofener: Scale timer init for DELTA_TIME
                     }
 
                     if (!dComIfGp_event_runCheck()) {
@@ -4336,7 +4347,7 @@ int daHorse_c::execute() {
 
     cXyz old_pos(current.pos);
     f32 old_speedF = speedF;
-    speedF *= cM_scos(shape_angle.x);
+    speedF *= cM_scos(shape_angle.x) * DELTA_TIME;  // Boofener: Scale speed by delta time
 
     if (m_procID == PROC_JUMP_e) {
         fopAcM_posMoveF(this, NULL);

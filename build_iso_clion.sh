@@ -1,5 +1,6 @@
 #!/bin/bash
-# Twilight Princess Build - Double-click to run!
+# Twilight Princess Build for CLion
+# Boofener: CLion-optimized build script with auto-close
 
 # Change to the directory where this script is located
 cd "$(dirname "$0")"
@@ -25,7 +26,7 @@ if [ -z "$PYTHON" ]; then
     echo "Install with: brew install python@3.11"
     echo "Terminal will close in 30 seconds..."
     sleep 30
-    osascript -e 'tell application "Terminal" to close first window' & exit 1
+    exit 1
 fi
 
 echo "✓ Using $PYTHON"
@@ -36,7 +37,7 @@ if ! command -v ninja >/dev/null 2>&1; then
     echo "Install with: brew install ninja"
     echo "Terminal will close in 30 seconds..."
     sleep 30
-    osascript -e 'tell application "Terminal" to close first window' & exit 1
+    exit 1
 fi
 
 echo "✓ ninja found"
@@ -49,23 +50,11 @@ DOLPHIN_PATH="/Applications/Dolphin.app"
 
 # Check for ISO
 if [ ! -f "$VANILLA_ISO" ]; then
-    echo "Please select your Twilight Princess ISO..."
-    SELECTED_ISO=$(osascript -e 'tell application "System Events"
-        activate
-        set theFile to choose file with prompt "Select Twilight Princess ISO" of type {"iso", "gcm"}
-        POSIX path of theFile
-    end tell' 2>/dev/null)
-    
-    if [ -z "$SELECTED_ISO" ]; then
-        echo "No ISO selected. Exiting."
-        echo "Terminal will close in 30 seconds..."
-        sleep 30
-        osascript -e 'tell application "Terminal" to close first window' & exit 1
-    fi
-    
-    echo "Copying ISO..."
-    mkdir -p "orig/GZ2E01"
-    cp "$SELECTED_ISO" "$VANILLA_ISO"
+    echo "❌ ERROR: ISO not found at $VANILLA_ISO"
+    echo "Please place your Twilight Princess ISO at: $VANILLA_ISO"
+    echo "Terminal will close in 30 seconds..."
+    sleep 30
+    exit 1
 fi
 
 echo "Using ISO: $VANILLA_ISO"
@@ -86,7 +75,7 @@ if [ $? -ne 0 ]; then
     echo "❌ Configure failed"
     echo "Terminal will close in 30 seconds..."
     sleep 30
-    osascript -e 'tell application "Terminal" to close first window' & exit 1
+    exit 1
 fi
 
 echo ""
@@ -101,7 +90,7 @@ if [ $? -ne 0 ]; then
         echo "❌ Build failed"
         echo "Terminal will close in 30 seconds..."
         sleep 30
-        osascript -e 'tell application "Terminal" to close first window' & exit 1
+        exit 1
     fi
 fi
 
@@ -115,7 +104,7 @@ if [ $? -ne 0 ]; then
     echo "❌ ISO build failed"
     echo "Terminal will close in 30 seconds..."
     sleep 30
-    osascript -e 'tell application "Terminal" to close first window' & exit 1
+    exit 1
 fi
 
 echo ""
@@ -132,6 +121,6 @@ if [ -e "$DOLPHIN_PATH" ]; then
 fi
 
 echo ""
-echo "Done! Terminal will close in 2 seconds..."
+echo "Done! Closing in 2 seconds..."
 sleep 2
-osascript -e 'tell application "Terminal" to close first window' & exit 0
+exit 0

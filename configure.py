@@ -1942,7 +1942,7 @@ config.libs = [
     ActorRel(MatchingFor(ALL_GCN), "d_a_e_zs"),
     ActorRel(MatchingFor(ALL_GCN), "d_a_formation_mng"),
     ActorRel(MatchingFor(ALL_GCN), "d_a_guard_mng"),
-    ActorRel(NonMatching, "d_a_horse"),
+    ActorRel(Modded, "d_a_horse"),  # Boofener: Modified for DELTA_TIME scaling
     ActorRel(NonMatching, "d_a_hozelda"),
     ActorRel(MatchingFor(ALL_GCN), "d_a_izumi_gate"),
     ActorRel(MatchingFor(ALL_GCN), "d_a_kago"),
