@@ -5,7 +5,8 @@
       "Bash(python configure.py:*)",
       "Bash(ninja:*)",
       "Bash(tasklist:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(python3 configure.py:*)"
     ],
     "deny": [],
     "ask": []

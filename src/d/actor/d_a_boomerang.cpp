@@ -13,6 +13,7 @@
 #include "d/actor/d_a_mirror.h"
 #include "Z2AudioLib/Z2Instances.h"
 #include "SSystem/SComponent/c_math.h"
+#include "global.h"  // Boofener: For DELTA_TIME scaling
 
 int daBoomerang_sight_c::createHeap() {
     void* tmpData;
@@ -1164,9 +1165,9 @@ int daBoomerang_c::procMove() {
     }
 
     current.angle.x = sp2C.atan2sY_XZ();
-    current.pos.x += speedF * cM_scos(current.angle.x) * cM_ssin(current.angle.y);
-    current.pos.y -= speedF * cM_ssin(current.angle.x);
-    current.pos.z += speedF * cM_scos(current.angle.x) * cM_scos(current.angle.y);
+    current.pos.x += speedF * DELTA_TIME * cM_scos(current.angle.x) * cM_ssin(current.angle.y);  // Boofener: Scale movement by delta time
+    current.pos.y -= speedF * DELTA_TIME * cM_ssin(current.angle.x);  // Boofener: Scale movement by delta time
+    current.pos.z += speedF * DELTA_TIME * cM_scos(current.angle.x) * cM_scos(current.angle.y);  // Boofener: Scale movement by delta time
 
     cXyz sp20 = m_aimPos - current.pos;
 

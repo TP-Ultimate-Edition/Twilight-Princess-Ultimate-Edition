@@ -1,6 +1,7 @@
 #include "d/dolzel.h" // IWYU pragma: keep
 
 #include "d/d_camera.h"
+#include "global.h"  // Boofener: For DELTA_TIME scaling
 #include "SSystem/SComponent/c_counter.h"
 #include "SSystem/SComponent/c_math.h"
 #include "cmath.h"
@@ -3567,7 +3568,7 @@ bool dCamera_c::chaseCamera(s32 param_0) {
                 mStyleSettle.mFinished = true;
             }
         }
-        mViewCache.mCenter += (pos - mViewCache.mCenter) * rate;
+        mViewCache.mCenter += (pos - mViewCache.mCenter) * rate * DELTA_TIME;  // Boofener: Scale interpolation rate
 
         f32 dist = dCamMath::xyzHorizontalDistance(pos, chase->field_0x58);
         if (dist < std::fabsf(vec.x > vec.z ? vec.x : vec.z) + 20.0f) {
@@ -3589,10 +3590,10 @@ bool dCamera_c::chaseCamera(s32 param_0) {
         }
         chase->field_0x50 = ang.Degree();
         cSGlobe globe(dVar43, ang, cSAngle(mControlledYaw.Inv()));
-        mViewCache.mDirection.R(mViewCache.mDirection.R() + (globe.R() - mViewCache.mDirection.R()) * rate);
-        mViewCache.mDirection.V(mViewCache.mDirection.V() + (globe.V() - mViewCache.mDirection.V()) * rate);
+        mViewCache.mDirection.R(mViewCache.mDirection.R() + (globe.R() - mViewCache.mDirection.R()) * rate * DELTA_TIME);  // Boofener: Scale interpolation rate
+        mViewCache.mDirection.V(mViewCache.mDirection.V() + (globe.V() - mViewCache.mDirection.V()) * rate * DELTA_TIME);  // Boofener: Scale interpolation rate
         if (chkFlag(0x100000) || bVar3 || bVar6) {
-            mViewCache.mDirection.U(mViewCache.mDirection.U() + (chase->field_0x96 - mViewCache.mDirection.U()) * rate);
+            mViewCache.mDirection.U(mViewCache.mDirection.U() + (chase->field_0x96 - mViewCache.mDirection.U()) * rate * DELTA_TIME);  // Boofener: Scale interpolation rate
         }
         chase->field_0x64 = mViewCache.mCenter + mViewCache.mDirection.Xyz();
         mViewCache.mEye = chase->field_0x64;
