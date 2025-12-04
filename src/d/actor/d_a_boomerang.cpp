@@ -254,17 +254,17 @@ void daBoomerang_sight_c::initialize() {
 
 int daBoomerang_sight_c::playAnime(int param_0, int param_1) {
     int i;
-    f32* var_r30 = field_0x98;
+    f32* cursorAngle = field_0x98;
     f32* var_r29 = field_0xb0;
     u8* alpha_p = m_alpha;
 
-    for (i = 0; i < BOOMERANG_LOCK_MAX; i++, var_r30++, var_r29++, alpha_p++) {
-        *var_r30 += 1.1f;
-        if (*var_r30 >= 50.0f) {
-            *var_r30 += -29.0f;
+    for (i = 0; i < BOOMERANG_LOCK_MAX; i++, cursorAngle++, var_r29++, alpha_p++) {
+        *cursorAngle += daAlinkHIO_boom_c0::m.mCursorHoverSpeed;
+        if (*cursorAngle >= 50.0f) {
+            *cursorAngle += -29.0f;
         }
 
-        *var_r29 += 1.1f;
+        *var_r29 += daAlinkHIO_boom_c0::m.mCursorLockedSpeed;
         if (*var_r29 >= (f32)m_cursorYellow2Brk->getFrameMax()) {
             *var_r29 -= (f32)m_cursorYellow2Brk->getFrameMax();
         }
@@ -279,13 +279,13 @@ int daBoomerang_sight_c::playAnime(int param_0, int param_1) {
         }
     }
 
-    if (*var_r30 < 21.0f) {
-        *var_r30 = 21.0f;
+    if (*cursorAngle < 21.0f) {
+        *cursorAngle = 21.0f;
     }
 
-    *var_r30 += 0.9f;
-    if (*var_r30 >= 50.0f) {
-        *var_r30 += -29.0f;
+    *cursorAngle += 0.9f;
+    if (*cursorAngle >= 50.0f) {
+        *cursorAngle += -29.0f;
     }
 
     *var_r29 += 0.9f;
@@ -1477,7 +1477,7 @@ int daBoomerang_c::create() {
     m_lineChk.OffFullGrp();
     m_lineChk.OnWaterGrp();
 
-    m_shippuSize = 1.0f;
+    m_shippuSize = 1.0f; // (negative?) size of the wind around boom when throwing
     return cPhs_COMPLEATE_e;
 }
 

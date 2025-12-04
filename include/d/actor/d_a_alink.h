@@ -1739,7 +1739,9 @@ public:
     /* 0x40 */ f32 mHorsebackFlyDistMax;
     /* 0x44 */ f32 mLockDistMax;
     /* 0x48 */ f32 mCatchSpeed;
-};  // Size: 0x4C
+    /* 0x4C */ f32 mCursorHoverSpeed;
+    /* 0x50 */ f32 mCursorLockedSpeed;
+};  // Size: 0x54
 
 class daAlinkHIO_boom_c0 {
 public:

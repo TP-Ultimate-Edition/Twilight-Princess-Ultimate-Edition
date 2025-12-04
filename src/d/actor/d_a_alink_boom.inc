@@ -45,11 +45,11 @@ f32 daAlink_c::getBoomLockMax() {
 
     if (checkBossBabaRoom()) {
         return 2600.0f;
-    } else if (daAlinkHIO_boom_c0::m.mLockDistMax > fly_max) {
-        return daAlinkHIO_boom_c0::m.mLockDistMax;
-    } else {
-        return fly_max;
     }
+    if (daAlinkHIO_boom_c0::m.mLockDistMax > fly_max) {
+        return daAlinkHIO_boom_c0::m.mLockDistMax;
+    }
+    return fly_max;
 }
 
 s16 daAlink_c::getBoomBgThroughTime() const {
@@ -148,7 +148,7 @@ void daAlink_c::setBoomerangReadyAnime() {
         var_f31 = 0.0f;
     }
 
-    setUpperAnimeBaseSpeed(0x54, var_f31, 3.0f);
+    setUpperAnimeBaseSpeed(0x54, var_f31, 3.0f * DELTA_TIME);
     setBoomerangReadyQuake();
 }
 
