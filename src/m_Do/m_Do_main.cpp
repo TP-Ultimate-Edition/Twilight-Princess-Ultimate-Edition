@@ -55,6 +55,9 @@ static float s_VICountsPerLogicUpdate = 1.0f;  // At 60fps logic, this is 1 VI p
 
 void setTargetFramerate(float fps) {
     g_targetFramerate = fps;
+    // Boofener: Immediately update deltaTime and scaleTime when framerate changes
+    g_deltaTime = 30.0f / fps;
+    g_scaleTime = (int)(fps / 30.0f);
 }
 
 float getTargetFramerate() {

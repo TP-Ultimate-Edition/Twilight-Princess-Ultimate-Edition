@@ -23,9 +23,8 @@ if [ -z "$PYTHON" ]; then
     echo "❌ ERROR: Python 3.10 or newer required"
     echo ""
     echo "Install with: brew install python@3.11"
-    echo "Terminal will close in 30 seconds..."
-    sleep 30
-    osascript -e 'tell application "Terminal" to close first window' > /dev/null 2>&1
+    echo ""
+    read -n 1 -s -r -p "Press any key to exit..."
     exit 1
 fi
 
@@ -35,9 +34,8 @@ echo "✓ Using $PYTHON"
 if ! command -v ninja >/dev/null 2>&1; then
     echo "❌ ERROR: ninja not found"
     echo "Install with: brew install ninja"
-    echo "Terminal will close in 30 seconds..."
-    sleep 30
-    osascript -e 'tell application "Terminal" to close first window' > /dev/null 2>&1
+    echo ""
+    read -n 1 -s -r -p "Press any key to exit..."
     exit 1
 fi
 
@@ -60,9 +58,8 @@ if [ ! -f "$VANILLA_ISO" ]; then
     
     if [ -z "$SELECTED_ISO" ]; then
         echo "No ISO selected. Exiting."
-        echo "Terminal will close in 30 seconds..."
-        sleep 30
-        osascript -e 'tell application "Terminal" to close first window' > /dev/null 2>&1
+        echo ""
+        read -n 1 -s -r -p "Press any key to exit..."
         exit 1
     fi
     
@@ -87,9 +84,8 @@ echo "[1/3] Configuring..."
 $PYTHON configure.py --non-matching --map
 if [ $? -ne 0 ]; then
     echo "❌ Configure failed"
-    echo "Terminal will close in 30 seconds..."
-    sleep 30
-    osascript -e 'tell application "Terminal" to close first window' > /dev/null 2>&1
+    echo ""
+    read -n 1 -s -r -p "Press any key to exit..."
     exit 1
 fi
 
@@ -103,9 +99,8 @@ if [ $? -ne 0 ]; then
     ninja
     if [ $? -ne 0 ]; then
         echo "❌ Build failed"
-        echo "Terminal will close in 30 seconds..."
-        sleep 30
-        osascript -e 'tell application "Terminal" to close first window' > /dev/null 2>&1
+        echo ""
+        read -n 1 -s -r -p "Press any key to exit..."
         exit 1
     fi
 fi
@@ -139,9 +134,8 @@ if [ $NEEDS_REBUILD -eq 1 ]; then
 
     if [ $? -ne 0 ]; then
         echo "❌ ISO build failed"
-        echo "Terminal will close in 30 seconds..."
-        sleep 30
-        osascript -e 'tell application "Terminal" to close first window' > /dev/null 2>&1
+        echo ""
+        read -n 1 -s -r -p "Press any key to exit..."
         exit 1
     fi
 fi
@@ -160,9 +154,6 @@ if [ -e "$DOLPHIN_PATH" ]; then
 fi
 
 echo ""
-echo "Done! Terminal will close in 2 seconds..."
-sleep 2
-
-# Close the terminal window
-osascript -e 'tell application "Terminal" to close (every window whose name contains ".command")' > /dev/null 2>&1
+echo "Done! Press any key to exit..."
+read -n 1 -s -r
 exit 0

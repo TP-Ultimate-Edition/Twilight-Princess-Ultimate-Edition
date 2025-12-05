@@ -794,7 +794,7 @@ config.libs = [
             Object(MatchingFor(ALL_GCN), "d/d_menu_save.cpp"),
             Object(MatchingFor(ALL_GCN), "d/d_menu_skill.cpp"),
             Object(MatchingFor(ALL_GCN), "d/d_menu_window_HIO.cpp"),
-            Object(Equivalent, "d/d_menu_window.cpp"), # weak func order (dDlst_MENU_CAPTURE_c::draw)
+            Object(Modded, "d/d_menu_window.cpp"), # weak func order (dDlst_MENU_CAPTURE_c::draw)
             Object(MatchingFor(ALL_GCN), "d/d_meter_HIO.cpp"),
             Object(MatchingFor(ALL_GCN), "d/d_meter_button.cpp"),
             Object(MatchingFor(ALL_GCN), "d/d_meter_haihai.cpp"),

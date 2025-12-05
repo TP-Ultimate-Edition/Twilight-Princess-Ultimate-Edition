@@ -678,14 +678,13 @@ bool dMenu_Ring_c::isOpen() {
 bool dMenu_Ring_c::isMoveEnd() {
     bool ret = 0;
     if (mStatus == STATUS_WAIT && mOldStatus != STATUS_EXPLAIN_FORCE && mOldStatus != STATUS_EXPLAIN) {
-        if (dMw_UP_TRIGGER() || dMw_DOWN_TRIGGER() || dMw_B_TRIGGER() ||
+        // Boofener: Removed dpad down, only dpad up closes item wheel now
+        if (dMw_UP_TRIGGER() || dMw_B_TRIGGER() ||
             dMeter2Info_getWarpStatus() == 2 || dMeter2Info_getWarpStatus() == 1 ||
             dMeter2Info_isTouchKeyCheck(0xe))
         {
             if (dMw_UP_TRIGGER()) {
                 mRingOrigin = 0;
-            } else if (dMw_DOWN_TRIGGER()) {
-                mRingOrigin = 2;
             } else {
                 mRingOrigin = 0xff;
             }

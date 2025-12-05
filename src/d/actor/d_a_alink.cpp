@@ -11499,6 +11499,18 @@ BOOL daAlink_c::checkItemChangeFromButton() {
 }
 
 BOOL daAlink_c::checkNextActionFromButton() {
+    // Boofener: Instant transform with D-pad down
+    if (mDoCPd_c::getTrigDown(PAD_1)) {
+        if (!checkEventRun() && mProcID != PROC_METAMORPHOSE) {
+            // Check basic safety conditions then force transformation
+            if (mLinkAcch.ChkGroundHit() &&
+                !checkModeFlg(MODE_PLAYER_FLY) &&
+                !checkMagneBootsOn()) {
+                return procCoMetamorphoseInit();
+            }
+        }
+    }
+
     if (checkItemChangeAutoAction()) {
         return 1;
     }
