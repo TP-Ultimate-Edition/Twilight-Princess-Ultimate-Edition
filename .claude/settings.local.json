@@ -6,7 +6,13 @@
       "Bash(ninja:*)",
       "Bash(tasklist:*)",
       "Bash(findstr:*)",
-      "Bash(python3 configure.py:*)"
+      "Bash(python3 configure.py:*)",
+      "Bash(ls:*)",
+      "Bash(git restore:*)",
+      "Bash(while [ ! -f build/GZ2E01/framework.dol ])",
+      "Bash(do sleep 1)",
+      "Bash(done)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

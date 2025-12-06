@@ -658,7 +658,7 @@ int daHorse_c::create() {
             m_lashAddSpeed = HIO.add_lash_speed;
         }
 
-        field_0x16c2 = HIO.max_turn;
+        field_0x16c2 = HIO.max_turn;  // Boofener: Not scaled - ratio adjustment handles frame rate
         m_flowID = shape_angle.z;
         if (m_flowID == 0) {
             m_flowID = 5000;
@@ -907,8 +907,10 @@ int daHorse_c::setDoubleAnime(f32 i_ratio, f32 i_anmSpeedA, f32 i_anmSpeedB, u16
 
 int daHorse_c::setSingleAnime(u16 i_anmIdx, f32 i_speed, f32 i_startF, s16 i_endF, f32 i_morf,
                               BOOL i_isDemoAnm) {
-    // Boofener: Scale animation speed for 60fps
-    i_speed *= DELTA_TIME;
+    // Boofener: Scale animation speed for 60fps (but NOT for demo anims - they're frame-controlled by demo system)
+    if (!i_isDemoAnm) {
+        i_speed *= DELTA_TIME;
+    }
 
     J3DAnmTransform* bck;
     if (i_isDemoAnm) {
@@ -1413,9 +1415,9 @@ void daHorse_c::acceptPlayerRide() {
 void daHorse_c::setStickData() {
     s16 stick_angle;
     if (checkStateFlg0(daHorse_FLG0(FLG0_RODEO_MODE | FLG0_UNK_10000000))) {
-        field_0x16c2 = 2000;
+        field_0x16c2 = 2000;  // Boofener: Not scaled - ratio adjustment handles frame rate
     } else {
-        field_0x16c2 = HIO.max_turn;
+        field_0x16c2 = HIO.max_turn;  // Boofener: Not scaled - ratio adjustment handles frame rate
     }
 
     if (dComIfGp_event_runCheck()) {
@@ -1868,19 +1870,19 @@ int daHorse_c::setSpeedAndAngle() {
             if (var_r28 == 2) {
                 speedF = 0.0f;
             } else if (var_r28 == 1) {
-                cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration);
+                cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration * DELTA_TIME);  // Boofener: Scale for 60fps
             }
         } else if (m_lashAccelerationTime == 0 && speedF > m_normalMaxSpeedF) {
-            cLib_chaseF(&speedF, m_normalMaxSpeedF, HIO.stopping_deceleration);
+            cLib_chaseF(&speedF, m_normalMaxSpeedF, HIO.stopping_deceleration * DELTA_TIME);  // Boofener: Scale for 60fps
         }
 
         if (checkStateFlg0(FLG0_UNK_200000)) {
             if (abs(current.angle.y) < 0x4000) {
-                cLib_addCalcAngleS(&current.angle.y, 0, 2, 0x2000, 0x100);
+                cLib_addCalcAngleS(&current.angle.y, 0, 2, 0x2000 * DELTA_TIME, 0x100 * DELTA_TIME);  // Boofener: Scale steps for 60fps
             } else {
-                cLib_addCalcAngleS(&current.angle.y, -0x8000, 2, 0x2000, 0x100);
+                cLib_addCalcAngleS(&current.angle.y, -0x8000, 2, 0x2000 * DELTA_TIME, 0x100 * DELTA_TIME);  // Boofener: Scale steps for 60fps
             }
-            cLib_addCalcAngleS(&shape_angle.y, current.angle.y, 2, 0x2000, 0x100);
+            cLib_addCalcAngleS(&shape_angle.y, current.angle.y, 2, 0x2000 * DELTA_TIME, 0x100 * DELTA_TIME);  // Boofener: Scale steps for 60fps
         }
 
         return 0;
@@ -1907,9 +1909,9 @@ int daHorse_c::setSpeedAndAngle() {
     if (checkInputOnR()) {
         if (checkStateFlg0(FLG0_UNK_40000) && (m_anmIdx[2] != ANM_HS_WAIT_03 || m_frameCtrl[2].getFrame() >= 18.0f)) {
             if (var_r27 == 1) {
-                cLib_addCalcAngleS(&current.angle.y, m_padStickAngleY + 0x8000, 5, field_0x16c2, HIO.min_turn);
+                cLib_addCalcAngleS(&current.angle.y, m_padStickAngleY + 0x8000, 5, field_0x16c2 * DELTA_TIME, HIO.min_turn * DELTA_TIME);  // Boofener: Scale steps for 60fps
             } else {
-                cLib_addCalcAngleS(&current.angle.y, m_padStickAngleY, 5, field_0x16c2, HIO.min_turn);
+                cLib_addCalcAngleS(&current.angle.y, m_padStickAngleY, 5, field_0x16c2 * DELTA_TIME, HIO.min_turn * DELTA_TIME);  // Boofener: Scale steps for 60fps
             }
 
             if (!checkStateFlg0(daHorse_FLG0(FLG0_UNK_100000 | FLG0_UNK_200000))) {
@@ -1924,10 +1926,10 @@ int daHorse_c::setSpeedAndAngle() {
                     }
 
                     if (!checkStateFlg0(daHorse_FLG0(FLG0_UNK_100000 | FLG0_UNK_200000))) {
-                        cLib_addCalcAngleS(&current.angle.y, m_padStickAngleY, 5, field_0x16c2 * var_f28, HIO.min_turn * var_f28);
+                        cLib_addCalcAngleS(&current.angle.y, m_padStickAngleY, 5, field_0x16c2 * var_f28 * DELTA_TIME, HIO.min_turn * var_f28 * DELTA_TIME);  // Boofener: Scale steps for 60fps
                     }
                 } else {
-                    cLib_addCalcAngleS(&current.angle.y, m_padStickAngleY, 5, field_0x16c2, HIO.min_turn);
+                    cLib_addCalcAngleS(&current.angle.y, m_padStickAngleY, 5, field_0x16c2 * DELTA_TIME, HIO.min_turn * DELTA_TIME);  // Boofener: Scale steps for 60fps
                 }
 
                 if (!checkStateFlg0(daHorse_FLG0(FLG0_UNK_100000 | FLG0_UNK_200000))) {
@@ -1939,7 +1941,7 @@ int daHorse_c::setSpeedAndAngle() {
                 return 3;
             }
 
-            cLib_addCalcAngleS(&current.angle.y, (m_padStickAngleY + 0x8000), 5, field_0x16c2, HIO.min_turn);
+            cLib_addCalcAngleS(&current.angle.y, (m_padStickAngleY + 0x8000), 5, field_0x16c2 * DELTA_TIME, HIO.min_turn * DELTA_TIME);  // Boofener: Scale steps for 60fps
 
             if (!checkStateFlg0(daHorse_FLG0(FLG0_UNK_100000 | FLG0_UNK_200000))) {
                 shape_angle.y = current.angle.y;
@@ -1949,7 +1951,7 @@ int daHorse_c::setSpeedAndAngle() {
 
     if (m_demoMode == 6) {
         if (var_r28 != 0 && speedF > 0.0f) {
-            cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration);
+            cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration * DELTA_TIME);  // Boofener: Scale for 60fps
         }
         return 0;
     }
@@ -1957,7 +1959,7 @@ int daHorse_c::setSpeedAndAngle() {
     if (checkStateFlg0(FLG0_UNK_1)) {
         dAttention_c* attention = dComIfGp_getAttention();
         if (attention->GetLockonList(0) != NULL && attention->LockonTruth() && fopAcM_searchActorDistanceXZ2(this, attention->GetLockonList(0)->getActor()) > 1000000.0f) {
-            cLib_addCalcAngleS(&current.angle.y, fopAcM_searchActorAngleY(this, attention->GetLockonList(0)->getActor()), 5, field_0x16c2, HIO.min_turn);
+            cLib_addCalcAngleS(&current.angle.y, fopAcM_searchActorAngleY(this, attention->GetLockonList(0)->getActor()), 5, field_0x16c2 * DELTA_TIME, HIO.min_turn * DELTA_TIME);  // Boofener: Scale steps for 60fps
             if (!checkStateFlg0(daHorse_FLG0(FLG0_UNK_100000 | FLG0_UNK_200000))) {
                 shape_angle.y = current.angle.y;
             }
@@ -1981,7 +1983,7 @@ int daHorse_c::setSpeedAndAngle() {
                 sp8 = field_0x170a + ((s16)(current.angle.y - field_0x170a) / 4);
             }
 
-            cLib_addCalcAngleS(&shape_angle.y, sp8, 5, 0x2000, 0x100);
+            cLib_addCalcAngleS(&shape_angle.y, sp8, 5, 0x2000 * DELTA_TIME, 0x100 * DELTA_TIME);  // Boofener: Scale steps for 60fps
         } else {
             if (current.angle.y < 0x4000 && current.angle.y > 0x1800) {
                 current.angle.y = 0x1800;
@@ -1993,11 +1995,11 @@ int daHorse_c::setSpeedAndAngle() {
                 current.angle.y = -0x6800;
             }
 
-            cLib_addCalcAngleS(&shape_angle.y, current.angle.y, 5, 0x2000, 0x100);
+            cLib_addCalcAngleS(&shape_angle.y, current.angle.y, 5, 0x2000 * DELTA_TIME, 0x100 * DELTA_TIME);  // Boofener: Scale steps for 60fps
         }
     }
 
-    cLib_chaseAngleS(&field_0x1702, 0, 0xC0);
+    cLib_chaseAngleS(&field_0x1702, 0, 0xC0 * DELTA_TIME);  // Boofener: Scale for 60fps
 
     f32 var_f30 = cM_scos(spA);
     if (checkStateFlg0(FLG0_UNK_2)) {
@@ -2011,10 +2013,10 @@ int daHorse_c::setSpeedAndAngle() {
     }
 
     if (var_r28 != 0 && speedF > 0.0f) {
-        cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration);
+        cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration * DELTA_TIME);  // Boofener: Scale for 60fps
     } else if (checkStateFlg0(FLG0_UNK_40000)) {
         if (m_anmIdx[2] != ANM_HS_WAIT_03 || m_frameCtrl[2].getFrame() >= 18.0f) {
-            cLib_chaseF(&speedF, -HIO.max_backward_speed, HIO.max_backward_acceleration);
+            cLib_chaseF(&speedF, -HIO.max_backward_speed, HIO.max_backward_acceleration * DELTA_TIME);  // Boofener: Scale for 60fps
 
             field_0x1704--;
             if (field_0x1704 == 0) {
@@ -2027,24 +2029,24 @@ int daHorse_c::setSpeedAndAngle() {
         }
     } else if (checkInputOnR() && m_lashAccelerationTime == 0 && var_r27 == 1) {
         if (speedF > 0.0f) {
-            cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration);
+            cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration * DELTA_TIME);  // Boofener: Scale for 60fps
         } else if (!checkStateFlg0(FLG0_UNK_8) && (checkTurnInput() || checkStateFlg0(daHorse_FLG0(FLG0_UNK_100000 | FLG0_UNK_200000))) && checkTurnPlayerState() && speedF > (0.2f * -HIO.max_backward_speed)) {
             return 1;
         } else {
             int spC = checkHorseNoMove(0);
             if (spC == 0) {
                 if (!checkStateFlg0(daHorse_FLG0(FLG0_UNK_100000 | FLG0_UNK_200000))) {
-                    cLib_chaseF(&speedF, -HIO.max_backward_speed, HIO.max_backward_acceleration);
+                    cLib_chaseF(&speedF, -HIO.max_backward_speed, HIO.max_backward_acceleration * DELTA_TIME);  // Boofener: Scale for 60fps
                 }
             } else if (spC == 1) {
-                cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration);
+                cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration * DELTA_TIME);  // Boofener: Scale for 60fps
             } else {
                 speedF = 0.0f;
             }
         }
     } else if (m_cowHit != 0) {
         if (!checkStateFlg0(daHorse_FLG0(FLG0_UNK_100000 | FLG0_UNK_200000))) {
-            cLib_chaseF(&speedF, 0.5f * m_normalMaxSpeedF, HIO.lash_acceleration);
+            cLib_chaseF(&speedF, 0.5f * m_normalMaxSpeedF, HIO.lash_acceleration * DELTA_TIME);  // Boofener: Scale for 60fps
         }
     } else {
         f32 var_f31;
@@ -2077,23 +2079,24 @@ int daHorse_c::setSpeedAndAngle() {
         if (dComIfG_Bgsp().ChkPolySafe(m_acch.m_gnd) && dComIfG_Bgsp().GetGroundCode(m_acch.m_gnd) == 11 && var_f31 > (m_normalMaxSpeedF + (0.5f * m_lashAddSpeed))) {
             var_f31 = m_normalMaxSpeedF + (0.5f * m_lashAddSpeed);
         }
-    
+
+
         if (var_f31 > fabsf(speedF)) {
-            cLib_chaseF(&speedF, var_f31, var_f29);
+            cLib_chaseF(&speedF, var_f31, var_f29 * DELTA_TIME);  // Boofener: Scale for 60fps
         } else if (checkStateFlg0(FLG0_UNK_4) || (!dComIfGp_event_runCheck() && !daAlink_getAlinkActorClass()->checkHorseRide() && !checkStateFlg0(daHorse_FLG0(FLG0_RODEO_MODE | FLG0_UNK_10000000)) && m_procID == PROC_MOVE_e)) {
             if (checkStateFlg0(FLG0_UNK_2) && !checkStateFlg0(FLG0_UNK_4)) {
                 return 3;
             }
-    
-            cLib_chaseF(&speedF, var_f31, HIO.stopping_deceleration);
+
+            cLib_chaseF(&speedF, var_f31, HIO.stopping_deceleration * DELTA_TIME);  // Boofener: Scale for 60fps
         } else {
             if (dComIfGp_event_runCheck() || checkStateFlg0(FLG0_UNK_10000000)) {
                 var_f29 = HIO.stopping_deceleration;
             } else {
                 var_f29 = HIO.deceleration;
             }
-    
-            cLib_chaseF(&speedF, var_f31, var_f29);
+
+            cLib_chaseF(&speedF, var_f31, var_f29 * DELTA_TIME);  // Boofener: Scale for 60fps
         }
     }
 
@@ -2184,12 +2187,12 @@ void daHorse_c::setMatrix() {
         }
     }
 
-    cLib_addCalcAngleS(&shape_angle.z, var_r29, 4, 1000, 100);
+    cLib_addCalcAngleS(&shape_angle.z, var_r29, 4, 1000 * DELTA_TIME, 100 * DELTA_TIME);  // Boofener: Scale steps for 60fps
 
     if (var_r27 == 0) {
-        cLib_addCalcAngleS(&field_0x16fa, 0, 2, 4000, 1000);
+        cLib_addCalcAngleS(&field_0x16fa, 0, 2, 4000 * DELTA_TIME, 1000 * DELTA_TIME);  // Boofener: Scale steps for 60fps
     } else {
-        cLib_addCalcAngleS(&field_0x16fa, var_r27, 4, 1200, 200);
+        cLib_addCalcAngleS(&field_0x16fa, var_r27, 4, 1200 * DELTA_TIME, 200 * DELTA_TIME);  // Boofener: Scale steps for 60fps
     }
 
     setNeckAngle();
@@ -2436,7 +2439,7 @@ void daHorse_c::setTailAngle() {
             *var_r30 -= var_r27;
             s16 sp8 = *var_r30;
 
-            cLib_addCalcAngleS(var_r30, 0, 5, 400, 35);
+            cLib_addCalcAngleS(var_r30, 0, 5, 400 * DELTA_TIME, 35 * DELTA_TIME);  // Boofener: Scale steps for 60fps
             *var_r30 += *var_r29;
             if (*var_r30 > 0x1000) {
                 *var_r30 = 0x1000;
@@ -2459,7 +2462,7 @@ void daHorse_c::setNeckAngle() {
     if (eventInfo.checkCommandTalk()) {
         m_aimNeckAngleY = fopAcM_searchActorAngleY(this, daAlink_getAlinkActorClass()) - shape_angle.y;
     } else if (field_0x1702 != 0) {
-        cLib_addCalcAngleS(&field_0x16f0, field_0x1702 * 3, 3, 0x400, 0x100);
+        cLib_addCalcAngleS(&field_0x16f0, field_0x1702 * 3, 3, 0x400 * DELTA_TIME, 0x100 * DELTA_TIME);  // Boofener: Scale steps for 60fps
         return;
     } else if (field_0x16fa != 0) {
         field_0x16f0 = field_0x16fa;
@@ -2496,7 +2499,7 @@ void daHorse_c::setNeckAngle() {
         var_r28 = 0x40;
     }
 
-    cLib_addCalcAngleS(&field_0x16f0, m_aimNeckAngleY, 3, var_r29, var_r28);
+    cLib_addCalcAngleS(&field_0x16f0, m_aimNeckAngleY, 3, var_r29 * DELTA_TIME, var_r28 * DELTA_TIME);  // Boofener: Scale steps for 60fps
 }
 
 void daHorse_c::copyFootMatrix() {
@@ -2795,7 +2798,7 @@ void daHorse_c::footBgCheck() {
         }
     }
 
-    cLib_addCalcAngleS(&shape_angle.x, spA, 10, 2000, 182);
+    cLib_addCalcAngleS(&shape_angle.x, spA, 10, 2000 * DELTA_TIME, 182 * DELTA_TIME);  // Boofener: Scale steps for 60fps
 
     if (sp24 != 4) {
         mDoMtx_stack_c::YrotS(-field_0x16e8);
@@ -2815,7 +2818,7 @@ void daHorse_c::footBgCheck() {
     footdata_p = m_footData;
     for (i = 0; i < 4; i++, footdata_p++) {
         for (j = 0; j < 4; j++) {
-            cLib_addCalcAngleS(&footdata_p->field_0x4[j], spA0[i][j], 2, 0x1800, 0x10);
+            cLib_addCalcAngleS(&footdata_p->field_0x4[j], spA0[i][j], 2, 0x1800 * DELTA_TIME, 0x10 * DELTA_TIME);  // Boofener: Scale steps for 60fps
         }
     }
 }
@@ -3729,9 +3732,9 @@ int daHorse_c::procStop() {
     if (var_r25 == 2) {
         speedF = 0.0f;
     } else if (checkStateFlg0(FLG0_RODEO_MODE)) {
-        cLib_chaseF(&speedF, 0.0f, 3.5f);
+        cLib_chaseF(&speedF, 0.0f, 3.5f * DELTA_TIME);  // Boofener: Scale for 60fps
     } else {
-        cLib_chaseF(&speedF, 0.0f, field_0x1774);
+        cLib_chaseF(&speedF, 0.0f, field_0x1774 * DELTA_TIME);  // Boofener: Scale for 60fps
     }
 
     if (fabsf(speedF) < 1.0f) {
@@ -3813,7 +3816,7 @@ int daHorse_c::procTurnInit(int param_0) {
     setSingleAnime(ANM_HS_STAND, HIO.stand_anm_speed, 0.0f, -1, HIO.stand_interpolation, 0);
 
     field_0x1774 = 52.0f;
-    field_0x1778 = 0.09817477f;
+    field_0x1778 = 0.09817477f / DELTA_TIME;  // Boofener: Scale sine frequency for animation speed
     field_0x177C = HIO.stand_cancel_frame;
     field_0x1780 = 20.0f;
     field_0x1784 = 53.0f;
@@ -3922,7 +3925,7 @@ int daHorse_c::procTurn() {
 
             if (checkInputOnR() || (checkStateFlg0(daHorse_FLG0(FLG0_UNK_200000 | FLG0_UNK_100000)) && !dComIfGp_event_runCheck()) || checkStateFlg0(FLG0_UNK_200) || field_0x1730 != 0) {
                 f32 f31 = cM_fsin(field_0x1778 * (frame_ctrl->getFrame() - field_0x1780));
-                s16 spE = 2000.0f * f31;
+                s16 spE = 2000.0f * f31 * DELTA_TIME;  // Boofener: Scale turn speed for 60fps
                 s16 var_r27;
                 if (checkStateFlg0(daHorse_FLG0(FLG0_UNK_200000 | FLG0_UNK_100000 | FLG0_UNK_200)) || field_0x1730 != 0) {
                     var_r27 = field_0x171e;
@@ -4120,16 +4123,16 @@ int daHorse_c::procLand() {
     if (temp_r3 == 2) {
         speedF = 0.0f;
     } else if (temp_r3 != 0) {
-        cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration);
+        cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration * DELTA_TIME);  // Boofener: Scale for 60fps
     }
 
     if (field_0x171a != 0) {
-        cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration);
+        cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration * DELTA_TIME);  // Boofener: Scale for 60fps
         dComIfGp_evmng_cutEnd(m_demoStaffId);
         setMoveAnime(-1.0f);
     } else if (frame_ctrl->checkAnmEnd()) {
         if (m_demoMode == 7) {
-            cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration);
+            cLib_chaseF(&speedF, 0.0f, HIO.stopping_deceleration * DELTA_TIME);  // Boofener: Scale for 60fps
             dComIfGp_evmng_cutEnd(m_demoStaffId);
             setMoveAnime(3.0f);
             field_0x171a = 1;

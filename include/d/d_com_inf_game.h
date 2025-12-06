@@ -2002,6 +2002,14 @@ inline void dComIfGs_setOptCameraControl(u8 i_cameraControl) {
     g_dComIfG_gameInfo.info.getPlayer().getConfig().setCameraControl(i_cameraControl);
 }
 
+inline bool dComIfGs_getOptCameraHInvert() {
+    return g_dComIfG_gameInfo.info.getPlayer().getConfig().getCameraHInvert();
+}
+
+inline void dComIfGs_setOptCameraHInvert(bool i_invert) {
+    g_dComIfG_gameInfo.info.getPlayer().getConfig().setCameraHInvert(i_invert);
+}
+
 inline void dComIfGs_setOptPointer(u8 i_pointer) {
     g_dComIfG_gameInfo.info.getPlayer().getConfig().setPointer(i_pointer);
 }

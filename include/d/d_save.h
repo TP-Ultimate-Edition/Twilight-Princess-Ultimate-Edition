@@ -521,6 +521,8 @@ public:
     void setCameraControl(u8 i_mCameraControl) { mCameraControl = i_mCameraControl; }
     bool getPointer() { return mPointer; }
     void setPointer(bool i_mPointer) { mPointer = i_mPointer; }
+    bool getCameraHInvert() { return mCameraHInvert; }  // Boofener: Horizontal camera inversion
+    void setCameraHInvert(bool i_invert) { mCameraHInvert = i_invert; }
 
     enum dSv_config_language {
         LANGAUGE_ENGLISH,
@@ -542,7 +544,8 @@ private:
     /* 0x9 */ bool mShortCut;      // Wii icon shortcut enabled/disabled.
     /* 0xA */ u8 mCameraControl;   // 0 : normal, 1 : inverted
     /* 0xB */ bool mPointer;       // Wii pointer enabled/disabled.
-};                                 // Size: 0xC
+    /* 0xC */ bool mCameraHInvert; // Boofener: Horizontal camera inversion (0 : normal, 1 : inverted)
+};                                 // Size: 0xD
 
 class dSv_player_c {
 public:

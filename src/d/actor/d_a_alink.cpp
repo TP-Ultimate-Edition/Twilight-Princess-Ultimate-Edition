@@ -11540,7 +11540,7 @@ BOOL daAlink_c::checkNextActionFromButton() {
                 !checkModeFlg(MODE_PLAYER_FLY) &&
                 !checkMagneBootsOn()) {
                 return procCoMetamorphoseInit();
-            }
+                }
         }
     }
 

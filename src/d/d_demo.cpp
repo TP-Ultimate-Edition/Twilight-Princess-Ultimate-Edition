@@ -999,21 +999,30 @@ int dDemo_c::update() {
         }
     }
 
-    if (m_control->forward(1) != 0) {
-        m_frame++;
+    // Boofener: Accumulate frames for proper 30fps cutscene speed at 60fps
+    static f32 s_frameAccum = 0.0f;
+    s_frameAccum += DELTA_TIME;
 
-        if (m_control->getSuspend() <= 0) {
-            m_frameNoMsg++;
+    if (s_frameAccum >= 1.0f) {
+        s_frameAccum -= 1.0f;
+
+        if (m_control->forward(1) != 0) {
+            m_frame++;
+
+            if (m_control->getSuspend() <= 0) {
+                m_frameNoMsg++;
+            }
+        } else {
+            m_mode = 2;
         }
-    } else {
-        m_mode = 2;
     }
 
     if (m_branchData != NULL) {
         branch();
     }
 
-    if (dComIfGs_staffroll_next_go_check() != 0) {
+    // Boofener: Only process staff roll timer on frames we actually advanced
+    if (s_frameAccum < DELTA_TIME && dComIfGs_staffroll_next_go_check() != 0) {
         dScnKy_env_light_c* env_light = &g_env_light;
 
         if (dComIfGs_staffroll_next_go_check() > 10) {
