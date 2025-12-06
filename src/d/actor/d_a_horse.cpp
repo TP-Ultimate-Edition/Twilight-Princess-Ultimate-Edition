@@ -4162,7 +4162,7 @@ int daHorse_c::procLargeDamageInit() {
 }
 
 int daHorse_c::procLargeDamage() {
-    cLib_addCalcAngleS(&shape_angle.y, current.angle.y, 5, 0x2000 * DELTA_TIME, 0x1000 * DELTA_TIME);  // Boofener: Scale steps for 60fps
+    cLib_addCalcAngleS(&shape_angle.y, current.angle.y, 5, 0x2000, 0x1000);
     if (m_acch.ChkWallHit()) {
         speedF = 0.0f;
     }
